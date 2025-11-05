@@ -1,0 +1,3 @@
+HTTPS=false
+REACT_APP_API_URL="http://guarda-api.8bec.eb.mil.br"
+NODE_TLS_REJECT_UNAUTHORIZED='0'
