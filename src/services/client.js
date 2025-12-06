@@ -1,7 +1,8 @@
 import axios from "axios";
+console.log("🔍 API URL:", process.env.REACT_APP_API_URL);
 
 const client = axios.create({
-  baseURL: "/api", // 🔧 Usar caminho relativo via Nginx
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000", // 🔧 Usar a variável correta com fallback
   timeout: 10000,
   withCredentials: true, // 🔒 ESSENCIAL para cookies
 });
