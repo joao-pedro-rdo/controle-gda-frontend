@@ -19,6 +19,7 @@ import ListPermissionarios from "./routes/ListPermissionarios";
 import ScheduleVisitor from "./routes/ScheduleVisitor"; // Nova importação
 import ScheduledVisitors from "./routes/ScheduledVisitors"; // Nova importação
 import { PessoasNaoAutorizadas } from "./routes/PessoasNaoAutorizadas";
+import Settings from "./routes/Settings";
 
 const App = () => {
   return (
@@ -187,6 +188,7 @@ const App = () => {
               </RequireAuth>
             }
           />
+          <Route path="/configuracoes" element={<Settings />} />
         </Routes>
       </AuthProvider>
     </ChakraProvider>

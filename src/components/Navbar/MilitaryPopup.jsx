@@ -17,6 +17,12 @@ import {
   Badge,
   Flex,
   Spinner,
+  Input,
+  Button,
+  HStack,
+  FormControl,
+  FormLabel,
+  useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -27,9 +33,21 @@ import VisitorImage from "../VisitorImage";
 const MilitaryPopup = ({ isOpen, onClose }) => {
   const [militaryEntries, setMilitaryEntries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
+
+  // Estados para os filtros
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState("00:00");
+  const [endTime, setEndTime] = useState("23:59");
+  const [useCustomRange, setUseCustomRange] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
+      // Inicializar com a data de hoje
+      const today = new Date().toISOString().split("T")[0];
+      setStartDate(today);
+      setEndDate(today);
       fetchTodayMilitary();
     }
   }, [isOpen]);
@@ -37,11 +55,9 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
   const fetchTodayMilitary = async () => {
     setLoading(true);
     try {
-      // 🎯 USAR EXATAMENTE A MESMA LÓGICA DO REPORT.JS
-
       // Obter data atual no formato YYYY-MM-DD (como se fosse input do usuário)
       const today = new Date();
-      const dateString = today.toISOString().split("T")[0]; // "2023-10-20"
+      const dateString = today.toISOString().split("T")[0];
 
       // Usar a MESMA lógica do Report.js
       const inputDate = new Date(dateString);
@@ -75,9 +91,92 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
       setMilitaryEntries(military);
     } catch (error) {
       console.error("❌ Erro ao buscar militares:", error);
+      toast({
+        title: "Erro ao buscar militares",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       setMilitaryEntries([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCustomRange = async () => {
+    if (!startDate || !endDate) {
+      toast({
+        title: "Datas obrigatórias",
+        description: "Por favor, selecione as datas inicial e final",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Combinar data com horário
+      const initialDateTime = new Date(`${startDate}T${startTime}:00`);
+      const finalDateTime = new Date(`${endDate}T${endTime}:59`);
+
+      const initialToRequest = initialDateTime.toISOString();
+      const finalDateToRequest = finalDateTime.toISOString();
+
+      console.log("🔍 Buscando militares com range customizado:", {
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        initialToRequest,
+        finalDateToRequest,
+      });
+
+      const response = await client.post("/entries/byDate", {
+        initialDate: initialToRequest,
+        finalDate: finalDateToRequest,
+      });
+
+      // Filtrar apenas militares
+      const military = response.data.filter(
+        (entry) => !entry.isVisitor && !entry.isPermissionario
+      );
+
+      console.log("👥 Militares encontrados:", military.length);
+      setMilitaryEntries(military);
+
+      toast({
+        title: "Busca realizada com sucesso",
+        description: `${military.length} militares encontrados`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("❌ Erro ao buscar militares:", error);
+      toast({
+        title: "Erro ao buscar militares",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      setMilitaryEntries([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleCustomRange = () => {
+    setUseCustomRange(!useCustomRange);
+    if (!useCustomRange) {
+      // Ao ativar filtro customizado, já buscar
+      fetchCustomRange();
+    } else {
+      // Ao desativar, voltar para hoje
+      fetchTodayMilitary();
     }
   };
 
@@ -91,9 +190,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
       <ModalContent maxHeight="90vh">
         <ModalHeader>
           <Flex align="center" justify="space-between">
-            <Text>
-              Militares no Serviço - {format(new Date(), "dd/MM/yyyy")}
-            </Text>
+            <Text>Militares no Serviço</Text>
             <Badge colorScheme="blue" fontSize="lg">
               {entries.length} militares dentro da OM
             </Badge>
@@ -101,6 +198,82 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
+          {/* Seção de Filtros */}
+          <Box bg="gray.50" p={4} borderRadius="md" mb={6}>
+            <Flex align="center" justify="space-between" mb={4}>
+              <Text fontSize="lg" fontWeight="bold">
+                🔍 Filtros de Busca
+              </Text>
+              <Button
+                size="sm"
+                colorScheme={useCustomRange ? "blue" : "gray"}
+                onClick={handleToggleCustomRange}
+              >
+                {useCustomRange ? "Voltar para Hoje" : "Range Customizado"}
+              </Button>
+            </Flex>
+
+            {useCustomRange && (
+              <VStack spacing={4} align="stretch">
+                <HStack spacing={4}>
+                  <FormControl>
+                    <FormLabel fontSize="sm">Data Inicial</FormLabel>
+                    <Input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      bg="white"
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel fontSize="sm">Horário Inicial</FormLabel>
+                    <Input
+                      type="time"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      bg="white"
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel fontSize="sm">Data Final</FormLabel>
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      bg="white"
+                    />
+                  </FormControl>
+
+                  <FormControl>
+                    <FormLabel fontSize="sm">Horário Final</FormLabel>
+                    <Input
+                      type="time"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      bg="white"
+                    />
+                  </FormControl>
+                </HStack>
+
+                <Button
+                  colorScheme="blue"
+                  onClick={fetchCustomRange}
+                  isLoading={loading}
+                >
+                  Buscar
+                </Button>
+              </VStack>
+            )}
+
+            {!useCustomRange && (
+              <Text fontSize="sm" color="gray.600">
+                📅 Mostrando militares de hoje (11h de hoje até 11h de amanhã)
+              </Text>
+            )}
+          </Box>
+
           {loading ? (
             <Flex justify="center" align="center" py={8}>
               <Spinner size="lg" />
@@ -147,7 +320,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
                             {entry.carModel} - {entry.color}
                           </Td>
                           <Td>{entry.licensePlate}</Td>
-                          <Td>{format(new Date(entry.time), "HH:mm")}</Td>
+                          <Td>{format(new Date(entry.time), "dd/MM/yyyy HH:mm")}</Td>
                         </Tr>
                       ))}
                     </Tbody>
@@ -159,7 +332,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
               {exits.length > 0 && (
                 <Box>
                   <Text fontSize="xl" fontWeight="bold" mb={4} color="red.600">
-                    🚪 Saídas Registradas Hoje ({exits.length})
+                    🚪 Saídas Registradas ({exits.length})
                   </Text>
                   <Table size="sm" variant="striped" colorScheme="red">
                     <Thead>
@@ -190,7 +363,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
                             {entry.carModel} - {entry.color}
                           </Td>
                           <Td>{entry.licensePlate}</Td>
-                          <Td>{format(new Date(entry.time), "HH:mm")}</Td>
+                          <Td>{format(new Date(entry.time), "dd/MM/yyyy HH:mm")}</Td>
                         </Tr>
                       ))}
                     </Tbody>
@@ -201,7 +374,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
               {/* Resumo */}
               <Box bg="gray.50" p={4} borderRadius="md">
                 <Text fontSize="lg" fontWeight="bold" mb={2}>
-                  📊 Resumo do Dia
+                  📊 Resumo do Período
                 </Text>
                 <Flex gap={6}>
                   <Text>

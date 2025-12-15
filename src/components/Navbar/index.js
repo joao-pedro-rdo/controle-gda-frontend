@@ -23,6 +23,7 @@ import {
   FaKey,
   FaSignOutAlt,
   FaChevronDown,
+  FaCog, // 🔧 Ícone de Configurações
 } from "react-icons/fa";
 import styled from "styled-components";
 import MilitaryPopup from "./MilitaryPopup";
@@ -265,6 +266,20 @@ const Navbar = () => {
                 leftIcon={<Icon as={FaUserShield} />}
               >
                 Controle
+              </Button>
+            </Link>
+          )}
+
+          {/* 🔧 Botão de Configurações - apenas S2 */}
+          {auth.user.role === "S2" && (
+            <Link to="/configuracoes">
+              <Button
+                variant="outline"
+                colorScheme="purple"
+                size="sm"
+                leftIcon={<Icon as={FaCog} />}
+              >
+                Configurações
               </Button>
             </Link>
           )}
