@@ -1,22 +1,22 @@
-import { Box, CircularProgress, Flex, Text } from '@chakra-ui/react';
+import { CircularProgress } from '@chakra-ui/react';
 
 const LoadingComponent = ({ message }) => (
-  <Flex direction="column" align="center" justify="center" py={8}>
-    <Box position="relative" mb={4}>
+  <div className="flex flex-col items-center justify-center py-8 px-4">
+    <div className="relative mb-4">
       <CircularProgress
         isIndeterminate
         color="blue.400"
         size="80px"
         thickness="4px"
       />
-    </Box>
-    <Text fontSize="xl" fontWeight="semibold" color="blue.600">
+    </div>
+    <p className="text-lg md:text-xl font-semibold text-blue-600 text-center">
       {message || 'Verificando autorização...'}
-    </Text>
-    <Text fontSize="sm" color="gray.500" mt={2}>
+    </p>
+    <p className="text-sm text-gray-500 mt-2 text-center">
       Aguarde, processando dados do QR Code...
-    </Text>
-  </Flex>
+    </p>
+  </div>
 );
 
 export default LoadingComponent;

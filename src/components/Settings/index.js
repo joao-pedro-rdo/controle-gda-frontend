@@ -1,11 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ImageUploader from './ImageUploader';
 import PreviewSection from './PreviewSection';
-import { FaCog, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaCog, FaInfoCircle, FaExclamationTriangle, FaArrowLeft } from 'react-icons/fa';
 import { useAppImages } from '../../hooks/useAppImages';
 import { useAuth } from '../../context/AuthContext';
 
 const Settings = () => {
+  const navigate = useNavigate();
   const { logo, background, loading, refreshImages } = useAppImages();
   const { user, isLoading: authLoading } = useAuth();
 
@@ -43,6 +45,15 @@ const Settings = () => {
     return (
       <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
+          {/* Botão Voltar */}
+          <button
+            onClick={() => navigate(-1)}
+            className="mb-4 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <FaArrowLeft className="mr-2" />
+            <span className="font-medium">Voltar</span>
+          </button>
+
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg shadow">
             <div className="flex">
               <FaExclamationTriangle className="h-6 w-6 text-yellow-400 mr-3" />
@@ -64,6 +75,15 @@ const Settings = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+        {/* Botão Voltar */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-4 flex items-center text-gray-600 hover:text-gray-900 transition-colors group"
+        >
+          <FaArrowLeft className="mr-2 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-medium">Voltar</span>
+        </button>
+
         {/* Header */}
         <div className="bg-white shadow rounded-lg p-6 mb-6">
           <div className="flex items-center justify-between">

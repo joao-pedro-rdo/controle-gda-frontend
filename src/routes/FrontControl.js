@@ -1,20 +1,18 @@
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
-import styled from "styled-components";
 import {
   Badge,
   Button,
-  Flex,
-  Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import Unauthorized from "../components/Unauthorized";
 import QRCodeInput from "../components/QRCodeInput";
 import PermissionarioPopup from "../components/FrontControl/AddPermissionario";
 import LoadingComponent from "../components/FrontControl/LoadingComponent";
-import AuthorizedUserCard from "../components/FrontControl/AuthorizedUserCard";
+import AuthorizedUserModal from "../components/FrontControl/AuthorizedUserModal";
 import MissionForm from "../components/FrontControl/MissionForm";
 import ScannerModeToggle from "../components/FrontControl/ScannerModeToggle";
+import { useEffect } from "react";
 
 // Hooks customizados
 import { useQRScanner } from "../hooks/useQRScanner";
@@ -23,6 +21,11 @@ import { useFrontControl } from "../hooks/useFrontControl";
 const FrontControl = () => {
   const auth = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { 
+    isOpen: isAuthorizedModalOpen, 
+    onOpen: onAuthorizedModalOpen, 
+    onClose: onAuthorizedModalClose 
+  } = useDisclosure();
 
   // Hook para gerenciar o scanner
   const {
@@ -50,15 +53,29 @@ const FrontControl = () => {
     hasApiResponse,
   } = useFrontControl(scanResult, setIsProcessing);
 
+  // Abrir modal quando autorizado
+  useEffect(() => {
+    if (authorized && !mission) {
+      onAuthorizedModalOpen();
+      
+      // Fechar automaticamente após 5 segundos e resetar
+      const timer = setTimeout(() => {
+        onAuthorizedModalClose();
+        resetScanner();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [authorized, mission]);
+
   const handlePermissionarioSelect = (permissionario) => {
     setScanResult(permissionario);
     onClose();
   };
 
-  const handleResetAfterEntry = () => {
-    setTimeout(() => {
-      resetScanner();
-    }, 5000);
+  const handleCloseAuthorizedModal = () => {
+    onAuthorizedModalClose();
+    resetScanner();
   };
 
   if (auth.user.role !== "Guarda") return <Unauthorized />;
@@ -66,7 +83,7 @@ const FrontControl = () => {
   return (
     <>
       <Navbar />
-      <Wrapper>
+      <div className="flex flex-col items-center mt-6 md:mt-10 w-full max-w-4xl mx-auto px-4 pb-8">
         {/* Toggle entre câmera e leitor físico */}
         <ScannerModeToggle
           useCameraScanner={useCameraScanner}
@@ -78,30 +95,31 @@ const FrontControl = () => {
           <input
             type="text"
             ref={inputRef}
-            style={{ position: "absolute", top: "-9999px" }}
+            className="absolute -top-[9999px]"
             onInput={handleInputChange}
           />
         )}
 
         {/* Scanner de câmera */}
         {useCameraScanner && (
-          <CamBox>
+          <div className="w-full max-w-md mx-auto mb-4">
             <QRCodeInput
               onScan={handleScanWebCam}
               showRawData={true}
             />
-          </CamBox>
+          </div>
         )}
 
         {/* Badge de status */}
         <Badge
           mb={8}
-          fontSize="1.4rem"
+          fontSize={{ base: "1rem", md: "1.4rem" }}
           colorScheme={
             message === "Operando pelo Leitor" || message === "Usando câmera do dispositivo"
               ? "green"
               : "red"
           }
+          className="px-4 py-2"
         >
           {message}
         </Badge>
@@ -109,52 +127,63 @@ const FrontControl = () => {
         {/* Conteúdo principal */}
         {isLoading ? (
           <LoadingComponent message={loadingMessage} />
-        ) : scanResult ? (
-          <>
-            {mission ? (
-              <MissionForm mission={mission} setMission={setMission} />
-            ) : authorized ? (
-              <AuthorizedUserCard authorized={authorized} />
-            ) : (
-              <>
-                <Text p={5} fontSize={26} textAlign="center" fontWeight={700} color="#ff0000">
-                  QR Code inválido!
-                </Text>
-                <Text fontSize={26} textAlign="center" fontWeight={700} color="#ff0000">
-                  Entrar como visitante e Procurar S2 imediatamente
-                </Text>
+        ) : scanResult && !authorized && !mission ? (
+          <div className="w-full max-w-2xl">
+            <p className="text-xl md:text-2xl text-center font-bold text-red-600 p-5">
+              QR Code inválido!
+            </p>
+            <p className="text-xl md:text-2xl text-center font-bold text-red-600">
+              Entrar como visitante e Procurar S2 imediatamente
+            </p>
 
-                <Flex gap={4} mt={4}>
-                  <a href="/visitante">
-                    <Button colorScheme="teal" p="2rem" w="150px">
-                      Visitante
-                    </Button>
-                  </a>
-                  <Button colorScheme="purple" p="2rem" w="150px" onClick={onOpen}>
-                    Permissionário
-                  </Button>
-                </Flex>
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <Text fontSize="1.5rem" mb={4}>
-              Aguardando leitura do QR Code...
-            </Text>
-
-            <Flex gap={4} direction={{ base: "column", md: "row" }} align="center">
+            <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center items-center">
               <a href="/visitante">
-                <Button colorScheme="teal" p="2rem" w="150px" size="lg">
+                <Button colorScheme="teal" size={{ base: "md", md: "lg" }} className="w-40">
                   Visitante
                 </Button>
               </a>
-              <Button colorScheme="purple" p="2rem" w="150px" size="lg" onClick={onOpen}>
+              <Button 
+                colorScheme="purple" 
+                size={{ base: "md", md: "lg" }} 
+                className="w-40"
+                onClick={onOpen}
+              >
                 Permissionário
               </Button>
-            </Flex>
-          </>
+            </div>
+          </div>
+        ) : mission ? (
+          <MissionForm mission={mission} setMission={setMission} />
+        ) : (
+          <div className="flex flex-col items-center w-full">
+            <p className="text-lg md:text-2xl mb-6 text-center px-4">
+              Aguardando leitura do QR Code...
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+              <a href="/visitante">
+                <Button colorScheme="teal" size={{ base: "md", md: "lg" }} className="w-40">
+                  Visitante
+                </Button>
+              </a>
+              <Button 
+                colorScheme="purple" 
+                size={{ base: "md", md: "lg" }} 
+                className="w-40"
+                onClick={onOpen}
+              >
+                Permissionário
+              </Button>
+            </div>
+          </div>
         )}
+
+        {/* Modal de usuário autorizado */}
+        <AuthorizedUserModal
+          isOpen={isAuthorizedModalOpen}
+          onClose={handleCloseAuthorizedModal}
+          authorized={authorized}
+        />
 
         {/* Modal de seleção de permissionário */}
         <PermissionarioPopup
@@ -162,27 +191,9 @@ const FrontControl = () => {
           onClose={onClose}
           onSelect={handlePermissionarioSelect}
         />
-      </Wrapper>
+      </div>
     </>
   );
 };
-
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin-top: 40px;
-  width: 100%;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 16px;
-`;
-
-const CamBox = styled.div`
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-`;
 
 export default FrontControl;

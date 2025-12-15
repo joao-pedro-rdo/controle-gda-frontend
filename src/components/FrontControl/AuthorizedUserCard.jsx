@@ -1,25 +1,15 @@
-import { Badge, Flex, Text } from '@chakra-ui/react';
-import styled from 'styled-components';
+import { Badge } from '@chakra-ui/react';
 import AuthenticatedImage from '../AuthenticatedImage';
-
-const InfoCard = styled.div`
-  margin-top: 0.8rem;
-  text-align: center;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  width: 50%;
-`;
 
 const AuthorizedUserCard = ({ authorized }) => {
   const isPermissionario = authorized?.isPermissionario || authorized?.type === 'permissionario';
 
   return (
-    <InfoCard>
-      <Flex flexDirection="column" alignItems="center" justifyContent="center">
-        <Text fontSize="6xl" fontWeight="bold" color="green.500" mb={4}>
+    <div className="mt-3 text-center border border-gray-300 p-4 md:p-6 rounded-lg w-full max-w-md md:max-w-lg mx-auto bg-white shadow-sm">
+      <div className="flex flex-col items-center justify-center">
+        <p className="text-4xl md:text-6xl font-bold text-green-500 mb-4">
           ✓ AUTORIZADO
-        </Text>
+        </p>
 
         {isPermissionario ? (
           <>
@@ -27,7 +17,7 @@ const AuthorizedUserCard = ({ authorized }) => {
               <AuthenticatedImage
                 imagePath={authorized.imagePath}
                 alt={authorized.completeName}
-                boxSize="150px"
+                boxSize={{ base: "120px", md: "150px" }}
                 objectFit="cover"
                 borderRadius="full"
                 mx="auto"
@@ -36,42 +26,56 @@ const AuthorizedUserCard = ({ authorized }) => {
                 borderColor="green.300"
               />
             )}
-            <Text fontSize="2xl" fontWeight="semibold">
+            <p className="text-xl md:text-2xl font-semibold mb-2">
               {authorized.completeName}
-            </Text>
-            <Text>CPF: {authorized.CPF}</Text>
-            <Text>Local: {authorized.local || 'Não informado'}</Text>
+            </p>
+            <p className="text-sm md:text-base text-gray-700 mb-1">
+              CPF: {authorized.CPF}
+            </p>
+            <p className="text-sm md:text-base text-gray-700 mb-1">
+              Local: {authorized.local || 'Não informado'}
+            </p>
             {authorized.carModel && (
-              <Text>
+              <p className="text-sm md:text-base text-gray-700 mb-1">
                 Veículo: {authorized.carModel} - {authorized.licensePlate} ({authorized.color})
-              </Text>
+              </p>
             )}
-            <Text fontSize="lg" color="blue.600" fontWeight="bold" mt={2}>
+            <p className="text-base md:text-lg text-blue-600 font-bold mt-2">
               PERMISSIONÁRIO
-            </Text>
+            </p>
           </>
         ) : (
           <>
-            <Text fontSize="2xl" fontWeight="semibold">
+            <p className="text-xl md:text-2xl font-semibold mb-2">
               {authorized.tagName}
-            </Text>
-            <Text>
+            </p>
+            <p className="text-sm md:text-base text-gray-700 mb-1">
               Veículo: {authorized.carModel} - {authorized.licensePlate}
-            </Text>
-            <Text>Cor: {authorized.color}</Text>
-            {authorized.company && <Text>Companhia: {authorized.company}</Text>}
-            {authorized.section && <Text>Seção: {authorized.section}</Text>}
-            <Text fontSize="lg" color="orange.600" fontWeight="bold" mt={2}>
+            </p>
+            <p className="text-sm md:text-base text-gray-700 mb-1">
+              Cor: {authorized.color}
+            </p>
+            {authorized.company && (
+              <p className="text-sm md:text-base text-gray-700 mb-1">
+                Companhia: {authorized.company}
+              </p>
+            )}
+            {authorized.section && (
+              <p className="text-sm md:text-base text-gray-700 mb-1">
+                Seção: {authorized.section}
+              </p>
+            )}
+            <p className="text-base md:text-lg text-orange-600 font-bold mt-2">
               VEÍCULO DE MILITAR
-            </Text>
+            </p>
           </>
         )}
 
-        <Badge colorScheme="green" fontSize="1.2rem" mt={3}>
+        <Badge colorScheme="green" fontSize={{ base: "1rem", md: "1.2rem" }} mt={3} className="px-3 py-1">
           Entrada Registrada
         </Badge>
-      </Flex>
-    </InfoCard>
+      </div>
+    </div>
   );
 };
 
