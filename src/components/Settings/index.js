@@ -1,154 +1,132 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import React from 'react';
 import ImageUploader from './ImageUploader';
 import PreviewSection from './PreviewSection';
+import { FaCog, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { useAppImages } from '../../hooks/useAppImages';
+import { useAuth } from '../../context/AuthContext';
 
 const Settings = () => {
-  const [logoFile, setLogoFile] = useState(null);
-  const [backgroundFile, setBackgroundFile] = useState(null);
-  const [currentLogo, setCurrentLogo] = useState('/img/logo.png');
-  const [currentBackground, setCurrentBackground] = useState('/img/background.jpg');
-  const [isLoading, setIsLoading] = useState(false);
+  const { logo, background, loading, refreshImages } = useAppImages();
+  const { user, isLoading: authLoading } = useAuth();
 
-  useEffect(() => {
-    // Carrega as configurações atuais
-    loadCurrentSettings();
-  }, []);
-
-  const loadCurrentSettings = () => {
-    // Aqui você pode buscar as configurações atuais da API
-    // Por enquanto, usando valores padrão
-    const savedLogo = localStorage.getItem('systemLogo') || '/img/logo.png';
-    const savedBackground = localStorage.getItem('systemBackground') || '/img/background.jpg';
-    
-    setCurrentLogo(savedLogo);
-    setCurrentBackground(savedBackground);
+  const handleLogoUpdate = (newImagePath) => {
+    window.dispatchEvent(new CustomEvent('logoUpdated', { detail: newImagePath }));
+    // Aguardar um pouco e recarregar as imagens
+    setTimeout(() => refreshImages(), 500);
   };
 
-  const handleLogoChange = (file) => {
-    setLogoFile(file);
+  const handleBackgroundUpdate = (newImagePath) => {
+    window.dispatchEvent(new CustomEvent('backgroundUpdated', { detail: newImagePath }));
+    setTimeout(() => refreshImages(), 500);
   };
 
-  const handleBackgroundChange = (file) => {
-    setBackgroundFile(file);
+  const handleReset = (imageType) => {
+    // Recarregar as imagens após reset
+    setTimeout(() => refreshImages(), 500);
   };
 
-  const handleSave = async () => {
-    setIsLoading(true);
-    try {
-      const formData = new FormData();
-      
-      if (logoFile) {
-        formData.append('logo', logoFile);
-      }
-      
-      if (backgroundFile) {
-        formData.append('background', backgroundFile);
-      }
+  // Verificar se usuário tem permissão (perfil S2)
+  const hasPermission = user?.role === 'S2';
 
-      // Simular upload - substitua pela sua API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Atualizar localStorage (substitua pela lógica da sua API)
-      if (logoFile) {
-        const logoUrl = URL.createObjectURL(logoFile);
-        localStorage.setItem('systemLogo', logoUrl);
-        setCurrentLogo(logoUrl);
-      }
-      
-      if (backgroundFile) {
-        const backgroundUrl = URL.createObjectURL(backgroundFile);
-        localStorage.setItem('systemBackground', backgroundUrl);
-        setCurrentBackground(backgroundUrl);
-      }
+  if (loading || authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <FaCog className="animate-spin h-12 w-12 text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Carregando configurações...</p>
+        </div>
+      </div>
+    );
+  }
 
-      toast.success('Configurações salvas com sucesso!');
-      setLogoFile(null);
-      setBackgroundFile(null);
-    } catch (error) {
-      console.error('Erro ao salvar configurações:', error);
-      toast.error('Erro ao salvar configurações');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleReset = () => {
-    setLogoFile(null);
-    setBackgroundFile(null);
-    setCurrentLogo('/img/logo.png');
-    setCurrentBackground('/img/background.jpg');
-    localStorage.removeItem('systemLogo');
-    localStorage.removeItem('systemBackground');
-    toast.info('Configurações resetadas para o padrão');
-  };
+  if (!hasPermission) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg shadow">
+            <div className="flex">
+              <FaExclamationTriangle className="h-6 w-6 text-yellow-400 mr-3" />
+              <div>
+                <h3 className="text-lg font-medium text-yellow-800">Acesso Negado</h3>
+                <p className="mt-2 text-sm text-yellow-700">
+                  Você não tem permissão para acessar as configurações de imagens do sistema.
+                  <br />
+                  Apenas usuários com perfil <strong>S2 (Super Admin)</strong> podem alterar as imagens.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">Configurações do Sistema</h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Personalize a aparência do seu sistema alterando o logo e a imagem de fundo
-            </p>
+    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white shadow rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <FaCog className="h-8 w-8 text-blue-600 mr-3" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Configurações de Imagens
+                </h1>
+                <p className="text-sm text-gray-600 mt-1">
+                  Personalize o logo e a imagem de fundo do sistema
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Info Box */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="flex">
+            <FaInfoCircle className="h-5 w-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-blue-800">
+              <p className="font-medium mb-1">Informações importantes:</p>
+              <ul className="list-disc list-inside space-y-1 text-blue-700">
+                <li>As imagens são salvas no servidor e visíveis para todos os usuários</li>
+                <li>Tamanho máximo: 5MB por imagem</li>
+                <li>Formatos aceitos: JPEG, PNG, GIF, WEBP</li>
+                <li>As alterações são aplicadas imediatamente em todo o sistema</li>
+                <li>Use o botão "Restaurar" para voltar às imagens padrão</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Grid de Uploaders e Preview */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Uploaders */}
+          <div className="space-y-6">
+            <ImageUploader
+              title="Logo do Sistema"
+              description="Imagem que aparece no cabeçalho e telas de login"
+              currentImage={logo}
+              imageType="logo"
+              onImageUpdate={handleLogoUpdate}
+              onReset={handleReset}
+            />
+            
+            <ImageUploader
+              title="Imagem de Fundo"
+              description="Imagem de fundo das telas de login e páginas públicas"
+              currentImage={background}
+              imageType="background"
+              onImageUpdate={handleBackgroundUpdate}
+              onReset={handleReset}
+            />
           </div>
 
-          <div className="p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Seção de Upload */}
-              <div className="space-y-6">
-                <ImageUploader
-                  title="Logo do Sistema"
-                  description="Faça upload de um novo logo (PNG, JPG até 2MB)"
-                  currentImage={currentLogo}
-                  onFileChange={handleLogoChange}
-                  selectedFile={logoFile}
-                  accept="image/png,image/jpeg"
-                  maxSize={2}
-                />
-
-                <ImageUploader
-                  title="Imagem de Fundo"
-                  description="Faça upload de uma nova imagem de fundo (PNG, JPG até 5MB)"
-                  currentImage={currentBackground}
-                  onFileChange={handleBackgroundChange}
-                  selectedFile={backgroundFile}
-                  accept="image/png,image/jpeg"
-                  maxSize={5}
-                />
-              </div>
-
-              {/* Seção de Preview */}
-              <PreviewSection
-                logo={logoFile ? URL.createObjectURL(logoFile) : currentLogo}
-                background={backgroundFile ? URL.createObjectURL(backgroundFile) : currentBackground}
-              />
-            </div>
-
-            {/* Botões de Ação */}
-            <div className="mt-8 flex justify-end space-x-4">
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Resetar
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={isLoading || (!logoFile && !backgroundFile)}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Salvando...
-                  </div>
-                ) : (
-                  'Salvar Alterações'
-                )}
-              </button>
-            </div>
+          {/* Preview */}
+          <div className="lg:sticky lg:top-8 h-fit">
+            <PreviewSection 
+              logo={logo} 
+              background={background} 
+            />
           </div>
         </div>
       </div>

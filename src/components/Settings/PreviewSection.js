@@ -1,51 +1,44 @@
 import React from 'react';
+import { FaEye } from 'react-icons/fa';
 
 const PreviewSection = ({ logo, background }) => {
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Preview das Alterações</h3>
+    <div className="bg-white shadow rounded-lg p-6 space-y-4">
+      <div className="flex items-center mb-4">
+        <FaEye className="h-6 w-6 text-gray-600 mr-2" />
+        <h3 className="text-lg font-semibold text-gray-900">Pré-visualização</h3>
+      </div>
+
+      {/* Preview da Tela de Login */}
+      <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+        <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
+          <p className="text-xs font-medium text-gray-600">Tela de Login</p>
+        </div>
         
-        {/* Preview da Tela de Login */}
-        <div className="border rounded-lg overflow-hidden shadow-sm">
-          <div className="bg-gray-100 px-3 py-2 border-b">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-xs text-gray-500 ml-2">Preview - Tela de Login</span>
-            </div>
-          </div>
+        <div 
+          className="relative h-64 bg-cover bg-center"
+          style={{ backgroundImage: `url(${background})` }}
+        >
+          {/* Overlay escuro */}
+          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
           
-          <div 
-            className="relative h-64 bg-cover bg-center flex items-center justify-center"
-            style={{ backgroundImage: `url(${background})` }}
-          >
-            {/* Overlay escuro */}
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-            
-            {/* Card de Login */}
-            <div className="relative z-10 bg-white p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-              <div className="text-center mb-4">
+          {/* Conteúdo */}
+          <div className="relative h-full flex flex-col items-center justify-center p-8">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-xs">
+              <div className="flex justify-center mb-4">
                 <img
                   src={logo}
-                  alt="Logo"
-                  className="h-12 w-auto mx-auto mb-2"
+                  alt="Logo Preview"
+                  className="h-16 w-auto object-contain"
                   onError={(e) => {
-                    e.target.src = '/img/placeholder.png';
+                    e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="50"%3E%3Crect fill="%23ddd" width="100" height="50"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ELogo%3C/text%3E%3C/svg%3E';
                   }}
                 />
-                <h2 className="text-lg font-semibold text-gray-900">Sistema de Visitantes</h2>
               </div>
-              
               <div className="space-y-3">
-                <div>
-                  <div className="h-8 bg-gray-100 rounded"></div>
-                </div>
-                <div>
-                  <div className="h-8 bg-gray-100 rounded"></div>
-                </div>
-                <div className="h-8 bg-blue-500 rounded"></div>
+                <div className="h-8 bg-gray-200 rounded"></div>
+                <div className="h-8 bg-gray-200 rounded"></div>
+                <div className="h-9 bg-blue-500 rounded"></div>
               </div>
             </div>
           </div>
@@ -53,48 +46,39 @@ const PreviewSection = ({ logo, background }) => {
       </div>
 
       {/* Preview do Header */}
-      <div className="border rounded-lg overflow-hidden shadow-sm">
-        <div className="bg-gray-100 px-3 py-2 border-b">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-xs text-gray-500 ml-2">Preview - Header do Sistema</span>
+      <div className="border-2 border-gray-300 rounded-lg overflow-hidden">
+        <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
+          <p className="text-xs font-medium text-gray-600">Cabeçalho do Sistema</p>
+        </div>
+        
+        <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+          <img
+            src={logo}
+            alt="Logo Preview"
+            className="h-10 w-auto object-contain"
+            onError={(e) => {
+              e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="40"%3E%3Crect fill="%23ddd" width="100" height="40"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ELogo%3C/text%3E%3C/svg%3E';
+            }}
+          />
+          <div className="flex space-x-2">
+            <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
+            <div className="h-8 w-24 bg-gray-300 rounded"></div>
           </div>
         </div>
         
-        <div className="bg-white p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <img
-                src={logo}
-                alt="Logo"
-                className="h-8 w-auto"
-                onError={(e) => {
-                  e.target.src = '/img/placeholder.png';
-                }}
-              />
-              <span className="text-lg font-semibold text-gray-900">
-                Controle de Visitantes
-              </span>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-              <div className="w-20 h-6 bg-gray-200 rounded"></div>
-            </div>
+        <div className="p-6 bg-gray-50">
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-300 rounded w-1/2"></div>
           </div>
         </div>
       </div>
 
-      {/* Informações das Imagens */}
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <h4 className="text-sm font-medium text-blue-900 mb-2">Informações</h4>
-        <ul className="text-sm text-blue-700 space-y-1">
-          <li>• Logo recomendado: 200x60px (formato PNG com fundo transparente)</li>
-          <li>• Imagem de fundo: 1920x1080px ou superior</li>
-          <li>• As alterações serão aplicadas após salvar</li>
-        </ul>
+      {/* Informações */}
+      <div className="bg-gray-50 rounded-lg p-4">
+        <p className="text-xs text-gray-600">
+          <strong>Nota:</strong> As alterações serão refletidas em todo o sistema após salvar.
+        </p>
       </div>
     </div>
   );
