@@ -54,14 +54,14 @@ const Users = () => {
     <section className="flex flex-col gap-4">
       <Navbar />
 
-      <article className={`${isMd ? "w-[70%]" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
+      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
         <Box w="100%" p={3}>
           <form onSubmit={handleSubmit} className="w-[100%]">
             <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
               Cadastrar Usuário
             </Badge>
             <Box 
-              className={`${isMd ? "flex justify-between gap-4" : "flex flex-col gap-4"}`}
+              className={`${isMd ? "flex gap-4" : "flex flex-col gap-4"}`}
             >
               <label htmlFor="login">
                 Login: <Input className="w-[90%] mb-4" type="text" name="newLogin" />
@@ -91,7 +91,7 @@ const Users = () => {
         </Box>
       </article>
 
-      <article className={`${isMd ? "w-[70%]" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
+      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
         {data &&
           data.map((user) => {
             return (
