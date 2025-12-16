@@ -11,6 +11,8 @@ import {
   Badge,
   Tooltip,
   FormHelperText,
+  useMediaQuery,
+  Input,
 } from "@chakra-ui/react";
 import * as S from "./styles.js";
 
@@ -18,6 +20,7 @@ const VehicleForm = () => {
   const [imgUrl, setImgUrl] = useState();
   const { id } = useParams();
   const [toEdit, setToEdit] = useState({});
+  const [isMd] = useMediaQuery("(min-width: 1000px)");
 
   const navigate = useNavigate();
 
@@ -124,166 +127,164 @@ const VehicleForm = () => {
   };
 
   return (
-    <S.Wrapper>
-      <Box w="90%" p={3}>
+    <section className="flex w-full justify-center border-2 rounded-xl">
+      <Box w="100%" p={4}>
         <form onSubmit={handleSubmit}>
-          <S.StyledFormControl>
-            <S.StyledGrid templateColumns="repeat(4, 1fr)" gap={1}>
-              <Box w="90%" p={1}>
-                <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
-                  Dados pessoais
-                </Badge>
-                <FormLabel htmlFor="completeName">Nome Completo</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="completeName"
-                  placeholder="Nome completo do militar"
-                  pattern="[A-Za-zÀ-ÿ\s]{3,}"
-                  title="Nome deve ter pelo menos 3 caracteres"
-                  minLength="3"
-                  style={{ textTransform: "capitalize" }}
-                  defaultValue={toEdit.completeName || ""}
-                  required
-                />
-                <FormLabel htmlFor="tagName">P/G - Nome de Guerra</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="tagName"
-                  placeholder="Ex: Sgt Silva, Cb Santos"
-                  pattern="[A-Za-zÀ-ÿ\s]{2,}"
-                  title="Nome de guerra (apenas letras e espaços)"
-                  style={{ textTransform: "capitalize" }}
-                  defaultValue={toEdit.tagName || ""}
-                  required
-                />
-                <FormLabel htmlFor="driverLicense">Habilitação</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="driverLicense"
-                  defaultValue={toEdit.driverLicense || ""}
-                />
-                <FormLabel htmlFor="idNumber">CPF do Militar</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="idNumber"
-                  placeholder="000.000.000-00"
-                  pattern="[0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}"
-                  title="Digite um CPF válido"
-                  maxLength="14"
-                  onInput={(e) => {
-                    let value = e.target.value.replace(/\D/g, "");
-                    if (value.length <= 11) {
-                      value = value.replace(/(\d{3})(\d)/, "$1.$2");
-                      value = value.replace(/(\d{3})(\d)/, "$1.$2");
-                      value = value.replace(/(\d{3})(\d{1,2})/, "$1-$2");
-                      e.target.value = value;
+          <article className={`flex gap-4 ${isMd ? "flex-row" : "flex-col"}`}>
+            <Box w="100%" p={1}>
+              <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
+                Dados pessoais
+              </Badge>
+              <FormLabel htmlFor="completeName">Nome Completo</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="completeName"
+                placeholder="Nome completo do militar"
+                pattern="[A-Za-zÀ-ÿ\s]{3,}"
+                title="Nome deve ter pelo menos 3 caracteres"
+                minLength="3"
+                style={{ textTransform: "capitalize" }}
+                defaultValue={toEdit.completeName || ""}
+                required
+              />
+              <FormLabel htmlFor="tagName">P/G - Nome de Guerra</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="tagName"
+                placeholder="Ex: Sgt Silva, Cb Santos"
+                pattern="[A-Za-zÀ-ÿ\s]{2,}"
+                title="Nome de guerra (apenas letras e espaços)"
+                style={{ textTransform: "capitalize" }}
+                defaultValue={toEdit.tagName || ""}
+                required
+              />
+              <FormLabel htmlFor="driverLicense">Habilitação</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="driverLicense"
+                defaultValue={toEdit.driverLicense || ""}
+              />
+              <FormLabel htmlFor="idNumber">CPF do Militar</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="idNumber"
+                placeholder="000.000.000-00"
+                pattern="[0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2}"
+                title="Digite um CPF válido"
+                maxLength="14"
+                onInput={(e) => {
+                  let value = e.target.value.replace(/\D/g, "");
+                  if (value.length <= 11) {
+                    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+                    value = value.replace(/(\d{3})(\d{1,2})/, "$1-$2");
+                    e.target.value = value;
+                  }
+                }}
+                defaultValue={toEdit.idNumber || ""}
+                required
+              />
+            </Box>
+
+            <Box w="100%" p={1}>
+              <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
+                Dados do veículo
+              </Badge>
+              <FormLabel htmlFor="carModel">Modelo do veículo</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="carModel"
+                required
+                defaultValue={toEdit.carModel || ""}
+              />
+              <FormLabel htmlFor="licensePlate">Placa do Veículo</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="licensePlate"
+                placeholder="ABC-1234 ou ABC1D23"
+                pattern="[A-Z]{3}-?[0-9]{4}|[A-Z]{3}[0-9][A-Z][0-9]{2}"
+                title="Digite uma placa brasileira válida"
+                maxLength="8"
+                style={{ textTransform: "uppercase" }}
+                onInput={(e) => {
+                  let value = e.target.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, "");
+                  if (value.length <= 7) {
+                    if (
+                      value.length === 7 &&
+                      /^[A-Z]{3}[0-9]{4}$/.test(value)
+                    ) {
+                      value = value.replace(/([A-Z]{3})([0-9]{4})/, "$1-$2");
                     }
-                  }}
-                  defaultValue={toEdit.idNumber || ""}
-                  required
-                />
-              </Box>
+                    e.target.value = value;
+                  }
+                }}
+                defaultValue={toEdit.licensePlate || ""}
+                required
+              />
+              <FormLabel htmlFor="color">Cor</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                required
+                name="color"
+                defaultValue={toEdit.color || ""}
+              />
+            </Box>
 
-              <Box w="90%" p={1} h="100%">
-                <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
-                  Dados do veículo
-                </Badge>
-                <FormLabel htmlFor="carModel">Modelo do veículo</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="carModel"
-                  required
-                  defaultValue={toEdit.carModel || ""}
-                />
-                <FormLabel htmlFor="licensePlate">Placa do Veículo</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="licensePlate"
-                  placeholder="ABC-1234 ou ABC1D23"
-                  pattern="[A-Z]{3}-?[0-9]{4}|[A-Z]{3}[0-9][A-Z][0-9]{2}"
-                  title="Digite uma placa brasileira válida"
-                  maxLength="8"
-                  style={{ textTransform: "uppercase" }}
-                  onInput={(e) => {
-                    let value = e.target.value
-                      .toUpperCase()
-                      .replace(/[^A-Z0-9]/g, "");
-                    if (value.length <= 7) {
-                      if (
-                        value.length === 7 &&
-                        /^[A-Z]{3}[0-9]{4}$/.test(value)
-                      ) {
-                        value = value.replace(/([A-Z]{3})([0-9]{4})/, "$1-$2");
-                      }
-                      e.target.value = value;
-                    }
-                  }}
-                  defaultValue={toEdit.licensePlate || ""}
-                  required
-                />
-                <FormLabel htmlFor="color">Cor</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  required
-                  name="color"
-                  defaultValue={toEdit.color || ""}
-                />
-              </Box>
+            <Box w="100%" p={1}>
+              <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
+                Dados da seção
+              </Badge>
+              <FormLabel htmlFor="company">Esqd</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="company"
+                defaultValue={toEdit.company || ""}
+              />
+              <FormLabel htmlFor="section">Seção</FormLabel>
+              <Input className="w-[90%] mb-4"
+                type="text"
+                name="section"
+                defaultValue={toEdit.section || ""}
+              />
+            </Box>
 
-              <Box w="90%" p={1} h="100%">
-                <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
-                  Dados da seção
-                </Badge>
-                <FormLabel htmlFor="company">Esqd</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="company"
-                  defaultValue={toEdit.company || ""}
-                />
-                <FormLabel htmlFor="section">Seção</FormLabel>
-                <S.StyledInput
-                  type="text"
-                  name="section"
-                  defaultValue={toEdit.section || ""}
-                />
-              </Box>
+            <article className="flex flex-col items-center justify-center" w="100%" p={1}>
+              <article className="flex w-[300px] h-[300px] justify-center items-center">
+                <Image src={imgUrl || null} alt="" />
+              </article>
 
-              <S.StyledBox w="90%" p={1}>
-                <S.QRBox>
-                  <Image src={imgUrl || null} alt="" />
-                </S.QRBox>
+              {/* Container para os botões */}
+              <Box display="flex" flexDirection="column" gap={2} mt={2}>
+                {/* Botão de cadastro/edição */}
+                <Button colorScheme="red" type="submit">
+                  {toEdit?.id
+                    ? "Editar e gerar QR Code"
+                    : "Cadastrar e gerar QR Code"}
+                </Button>
 
-                {/* Container para os botões */}
-                <Box display="flex" flexDirection="column" gap={2} mt={2}>
-                  {/* Botão de cadastro/edição */}
-                  <Button colorScheme="red" type="submit">
-                    {toEdit?.id
-                      ? "Editar e gerar QR Code"
-                      : "Cadastrar e gerar QR Code"}
-                  </Button>
-
-                  {/* Botão de download do QR Code sem o ícone */}
-                  {imgUrl && toEdit?.id && (
-                    <Tooltip
-                      label={`Baixar QR Code de ${
-                        toEdit.completeName || "Veículo"
-                      }`}
+                {/* Botão de download do QR Code sem o ícone */}
+                {imgUrl && toEdit?.id && (
+                  <Tooltip
+                    label={`Baixar QR Code de ${
+                      toEdit.completeName || "Veículo"
+                    }`}
+                  >
+                    <Button
+                      onClick={handleDownloadQRCode}
+                      colorScheme="green"
                     >
-                      <Button
-                        onClick={handleDownloadQRCode}
-                        colorScheme="green"
-                      >
-                        Download QR Code
-                      </Button>
-                    </Tooltip>
-                  )}
-                </Box>
-              </S.StyledBox>
-            </S.StyledGrid>
-          </S.StyledFormControl>
+                      Download QR Code
+                    </Button>
+                  </Tooltip>
+                )}
+              </Box>
+            </article>
+          </article>
         </form>
       </Box>
-    </S.Wrapper>
+    </section>
   );
 };
 
