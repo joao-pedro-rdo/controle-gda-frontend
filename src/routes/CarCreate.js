@@ -12,9 +12,9 @@ const CarCreate = () => {
   return (
     <>
       <Navbar />
-      <Wrapper>
+      <section className="mx-auto flex w-[90%] items-center justify-center">
         <VehicleForm />
-      </Wrapper>
+      </section>
     </>
   );
 };
