@@ -18,7 +18,6 @@ const Login: React.FC = () => {
     };
 
     try {
-      console.log("Tentativa de login:", data.login);
       const result = await auth.login(data);
 
       if (result.success) {
