@@ -14,7 +14,6 @@ import {
   useMediaQuery,
   Input,
 } from "@chakra-ui/react";
-import * as S from "./styles.js";
 
 const VehicleForm = () => {
   const [imgUrl, setImgUrl] = useState();
