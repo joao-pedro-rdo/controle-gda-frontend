@@ -64,7 +64,6 @@ const ChangePassword = () => {
       <Flex justifyContent={"center"}>
         <Flex
           justifyContent={"center"}
-          maxW="25%"
           mt={"4rem"}
           p={8}
           border="1px solid #ccc"
