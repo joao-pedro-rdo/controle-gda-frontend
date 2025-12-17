@@ -5,12 +5,14 @@ import client from "../../../services/client";
 import InputMask from "react-input-mask";
 import { Button, useToast, Alert, AlertIcon, Box } from "@chakra-ui/react";
 import ImageCapture from "./ImageCapture"; // Assuming ImageCapture is in the same folder
+import { useDestinations } from "../../../hooks/useDestinations";
 
 const VisitorForm = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const auth = useAuth();
     const toast = useToast();
+    const { destinations, loading: loadingDestinations } = useDestinations();
 
     const [isLoading, setIsLoading] = useState(false);
     const [scheduledVisitor, setScheduledVisitor] = useState(null);
@@ -182,25 +184,18 @@ const VisitorForm = () => {
                         name="section"
                         id="section"
                         defaultValue={scheduledVisitor?.target}
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500"
+                        disabled={loadingDestinations}
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100"
                         required
                     >
-                        <option value="">Selecione...</option>
-                        <option value="RP">RP</option>
-                        <option value="SFPC">SFPC</option>
-                        <option value="Cmt">Cmt</option>
-                        <option value="SCmt">Scmt</option>
-                        <option value="Estande">Estande</option>
-                        <option value="Adj Cmdo">Adj Cmdo</option>
-                        <option value="SecInfor">SecInfor</option>
-                        <option value="SecJur">SecJur</option>
-                        <option value="S1">S1</option>
-                        <option value="S2">S2</option>
-                        <option value="S3">S3</option>
-                        <option value="S4">S4</option>
-                        <option value="Pelotões">Pelotões</option>
-                        <option value="SubCias">SubCias</option>
-                        <option value="Outros">Outros</option>
+                        <option value="">
+                            {loadingDestinations ? 'Carregando...' : 'Selecione...'}
+                        </option>
+                        {destinations.map((dest) => (
+                            <option key={dest} value={dest}>
+                                {dest}
+                            </option>
+                        ))}
                     </select>
                 </div>
 

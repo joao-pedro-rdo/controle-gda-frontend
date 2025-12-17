@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
+import client from '../services/client';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const useAppImages = () => {
   const [logo, setLogo] = useState('/img/logo.png');
-  const [background, setBackground] = useState('/img/background.jpg');
+  const [background, setBackground] = useState('/img/bg-cover.jpg');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -12,10 +13,14 @@ export const useAppImages = () => {
 
     // Listener para atualizações
     const handleLogoUpdate = (e) => {
-      setLogo(`${API_BASE_URL}${e.detail}?t=${Date.now()}`);
+      const logoPath = e.detail.startsWith('http') || e.detail.startsWith('/')
+        ? e.detail
+        : `${API_BASE_URL}${e.detail}`;
+      setLogo(`${logoPath}?t=${Date.now()}`);
     };
-    const handleBackgroundUpdate = (e) => {
-      setBackground(`${API_BASE_URL}${e.detail}?t=${Date.now()}`);
+    const handleBackgroundUpdate = () => {
+      // Background sempre usa bg-cover.jpg
+      setBackground(`${API_BASE_URL}/img/bg-cover.jpg?t=${Date.now()}`);
     };
 
     window.addEventListener('logoUpdated', handleLogoUpdate);
@@ -29,32 +34,30 @@ export const useAppImages = () => {
 
   const fetchCurrentImages = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const response = await client.get('/system-images/current');
+      const data = response.data;
       
-      const response = await fetch(`${API_BASE_URL}/system-images/current`, {
-        headers: token ? {
-          'Authorization': `Bearer ${token}`
-        } : {}
-      });
+      // Logo: usar o caminho retornado ou padrão
+      const logoPath = data.logo 
+        ? (data.logo.startsWith('http') || data.logo.startsWith('/img') 
+            ? data.logo 
+            : `${API_BASE_URL}${data.logo}`)
+        : '/img/logo.png';
+      
+      // Background: sempre usar bg-cover.jpg do servidor
+      const backgroundPath = data.background 
+        ? (data.background.startsWith('http')
+            ? data.background 
+            : `${API_BASE_URL}/img/bg-cover.jpg`)
+        : `${API_BASE_URL}/img/bg-cover.jpg`;
 
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Se retornar null, usar imagens padrão
-        const logoPath = data.logo 
-          ? `${API_BASE_URL}${data.logo}?t=${Date.now()}` 
-          : '/img/logo.png';
-        
-        const backgroundPath = data.background 
-          ? `${API_BASE_URL}${data.background}?t=${Date.now()}` 
-          : '/img/background.jpg';
-
-        setLogo(logoPath);
-        setBackground(backgroundPath);
-      }
+      setLogo(`${logoPath}?t=${Date.now()}`);
+      setBackground(`${backgroundPath}?t=${Date.now()}`);
     } catch (error) {
       console.error('Erro ao carregar imagens do sistema:', error);
       // Manter imagens padrão em caso de erro
+      setLogo('/img/logo.png');
+      setBackground(`${API_BASE_URL}/img/bg-cover.jpg`);
     } finally {
       setLoading(false);
     }

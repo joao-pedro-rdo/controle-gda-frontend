@@ -142,3 +142,16 @@ O repositório principal contém:
 - Guia de deploy
 
 ---
+
+// Desenvolvimento
+const API_URL = "http://localhost:5000";
+
+// Produção
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+// Imagens públicas (logo/background)
+const logoUrl = `${API_URL}/system-images/logo.png`;
+const bgUrl = `${API_URL}/public/img/background.jpg`;
+
+// Ou melhor ainda, busque da API:
+const { logo, background } = await fetch(`${API_URL}/system-images/current`);

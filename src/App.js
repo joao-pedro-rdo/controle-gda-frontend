@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Login from "./components/Login";
 import { AuthProvider, RequireAuth } from "./context/AuthContext";
 import { Routes, Route } from "react-router-dom";
@@ -22,6 +23,27 @@ import { PessoasNaoAutorizadas } from "./routes/PessoasNaoAutorizadas";
 import Settings from "./routes/Settings";
 
 const App = () => {
+  useEffect(() => {
+    // Aplicar título e favicon salvos ao carregar a aplicação
+    const savedTitle = localStorage.getItem('systemPageTitle');
+    const savedLogo = localStorage.getItem('systemLogo');
+    
+    if (savedTitle) {
+      document.title = savedTitle;
+    }
+    
+    if (savedLogo) {
+      // Atualizar favicon
+      const existingFavicons = document.querySelectorAll('link[rel*="icon"]');
+      existingFavicons.forEach(icon => icon.remove());
+      
+      const link = document.createElement('link');
+      link.rel = 'shortcut icon';
+      link.type = 'image/x-icon';
+      link.href = savedLogo;
+      document.head.appendChild(link);
+    }
+  }, []);
   return (
     <ChakraProvider>
       <AuthProvider>
@@ -188,7 +210,15 @@ const App = () => {
               </RequireAuth>
             }
           />
-          <Route path="/configuracoes" element={<Settings />} />
+          {/* S2 - OK */}
+          <Route
+            path="/configuracoes"
+            element={
+              <RequireAuth>
+                <Settings />
+              </RequireAuth>
+            }
+          />
         </Routes>
       </AuthProvider>
     </ChakraProvider>

@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { FormEvent, useState } from "react";
+import { useAppImages } from "../../hooks/useAppImages";
+import { useColors } from "../../hooks/useColors";
 
 const Login: React.FC = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { logo, background, loading: loadingImages } = useAppImages();
+  const { primaryColor, secondaryColor } = useColors();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,27 +39,42 @@ const Login: React.FC = () => {
     }
   };
 
+  if (loadingImages) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-100 to-red-300">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-red-200">
+    <div 
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{ backgroundImage: `url(${background})` }}
+    >
+      {/* Overlay escuro para melhorar legibilidade */}
+      <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+      
+      <div 
+        className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 m-4"
+        style={{ borderColor: primaryColor, borderWidth: '2px' }}
+      >
         <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 mb-2 rounded-full bg-red-200 flex items-center justify-center shadow-md">
-            <svg
-              className="w-8 h-8 text-red-700"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm0 2c-2.67 0-8 1.337-8 4v2a1 1 0 001 1h14a1 1 0 001-1v-2c0-2.663-5.33-4-8-4z"
-              />
-            </svg>
+          <div className="w-24 h-24 mb-4 flex items-center justify-center">
+            <img
+              src={logo}
+              alt="Logo do Sistema"
+              className="max-w-full max-h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.src = '/img/logo.png'; // Fallback
+              }}
+            />
           </div>
-          <h2 className="text-2xl font-bold text-red-900 mb-1">Bem-vindo</h2>
-          <p className="text-red-600 text-sm">
+          <h2 className="text-2xl font-bold mb-1" style={{ color: secondaryColor }}>Bem-vindo</h2>
+          <p className="text-sm" style={{ color: primaryColor }}>
             Acesse sua conta para continuar
           </p>
         </div>
@@ -63,7 +82,8 @@ const Login: React.FC = () => {
           <div>
             <label
               htmlFor="user"
-              className="block text-sm font-semibold text-red-900 mb-1"
+              className="block text-sm font-semibold mb-1"
+              style={{ color: secondaryColor }}
             >
               Usuário
             </label>
@@ -73,14 +93,21 @@ const Login: React.FC = () => {
               name="user"
               required
               autoComplete="username"
-              className="w-full px-4 py-2 border border-red-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent bg-red-50 text-red-900 placeholder-red-400 transition"
+              className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+              style={{ 
+                borderColor: `${primaryColor}60`,
+                backgroundColor: `${primaryColor}10`
+              }}
+              onFocus={(e) => e.target.style.borderColor = primaryColor}
+              onBlur={(e) => e.target.style.borderColor = `${primaryColor}60`}
               placeholder="Digite seu usuário"
             />
           </div>
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-semibold text-red-900 mb-1"
+              className="block text-sm font-semibold mb-1"
+              style={{ color: secondaryColor }}
             >
               Senha
             </label>
@@ -90,14 +117,23 @@ const Login: React.FC = () => {
               name="password"
               required
               autoComplete="current-password"
-              className="w-full px-4 py-2 border border-red-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent bg-red-50 text-red-900 placeholder-red-400 transition"
+              className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+              style={{ 
+                borderColor: `${primaryColor}60`,
+                backgroundColor: `${primaryColor}10`
+              }}
+              onFocus={(e) => e.target.style.borderColor = primaryColor}
+              onBlur={(e) => e.target.style.borderColor = `${primaryColor}60`}
               placeholder="Digite sua senha"
             />
           </div>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 mt-2 rounded-lg bg-gradient-to-r from-red-500 to-red-700 text-white font-bold shadow-md hover:from-red-600 hover:to-red-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-2 mt-2 rounded-lg text-white font-bold shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ background: `linear-gradient(to right, ${primaryColor}, ${secondaryColor})` }}
+            onMouseEnter={(e) => e.currentTarget.style.background = `linear-gradient(to right, ${secondaryColor}, ${primaryColor})`}
+            onMouseLeave={(e) => e.currentTarget.style.background = `linear-gradient(to right, ${primaryColor}, ${secondaryColor})`}
           >
             {isLoading ? "Bom serviço!" : "Entrar"}
           </button>
