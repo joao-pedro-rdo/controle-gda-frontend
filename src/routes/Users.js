@@ -54,12 +54,12 @@ const Users = () => {
     <section className="flex flex-col gap-4">
       <Navbar />
 
-      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
+      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2 shadow-md`}>
         <Box w="100%" p={3}>
+          <div className="bg-blue-100 text-blue-900 font-semibold px-4 py-2 rounded-md mb-4">
+            Cadastrar Usuário
+          </div>
           <form onSubmit={handleSubmit} className="w-[100%]">
-            <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
-              Cadastrar Usuário
-            </Badge>
             <Box 
               className={`${isMd ? "flex gap-4" : "flex flex-col gap-4"}`}
             >
@@ -91,11 +91,11 @@ const Users = () => {
         </Box>
       </article>
 
-      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
+      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex flex-col h-auto self-center rounded-xl justify-center border-2  shadow-md`}>
         {data &&
           data.map((user) => {
             return (
-              <article className="flex justify-between w-[100%] p-2" key={user.id}>
+              <article className={`flex w-[100%] p-2 ${isMd ? "flex-row" : "flex-col rounded-lg border-2 "}`} key={user.id}>
                 <Text className="flex w-full p-2 gap-2" textAlign="center">
                   <strong>Usuário: </strong>
                   <p>{user.login}</p>
@@ -106,6 +106,7 @@ const Users = () => {
                 </Text>
                 {auth.user.login !== user.login ? (
                   <Button
+                    minW={'80px'}
                     onClick={() => handleDelete(user.id)}
                     colorScheme={"red"}
                   >
