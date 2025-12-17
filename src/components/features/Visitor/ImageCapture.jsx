@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Box, Button, Image, Flex, Text, useToast } from '@chakra-ui/react';
 import Webcam from 'react-webcam';
-import client from '../services/client.js';
+import client from '../../../services/client.js';
 
 function ImageCapture({ onImageCapture, showImportFromSystem = true }) {
     const [preview, setPreview] = useState(null);
@@ -84,44 +84,30 @@ function ImageCapture({ onImageCapture, showImportFromSystem = true }) {
     };
 
     return (
-        <Box width="100%">
+        <div className="w-full">
             {/* Área de preview da imagem */}
             {preview ? (
-                <Box mb={3} display="flex" justifyContent="center">
-                    <Image
+                <div className="mb-3 flex justify-center">
+                    <img
                         src={preview}
                         alt="Foto preview"
-                        width="180px"
-                        height="240px"
-                        objectFit="cover"
-                        borderRadius="md"
+                        className="w-48 h-64 object-cover rounded-md"
                     />
-                </Box>
+                </div>
             ) : showCamera ? (
-                <Box mb={3} position="relative">
+                <div className="mb-3 relative">
                     {/* Modal da câmera com tamanho aumentado */}
-                    <Box
-                        border="2px dashed"
-                        borderColor="gray.300"
-                        borderRadius="md"
-                        p={2}
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        width="100%" // Ajustar para responsividade
-                        maxWidth="480px" // Limitar largura máxima
-                        margin="0 auto"
+                    <div
+                        className="border-2 border-dashed border-gray-300 rounded-md p-2 flex flex-col items-center w-full max-w-lg mx-auto"
                     >
                         <Webcam
                             audio={false}
                             ref={webcamRef}
                             screenshotFormat="image/jpeg"
                             videoConstraints={videoConstraints}
-                            width="100%"
-                            height="auto"
-                            style={{ borderRadius: '4px' }}
+                            className="w-full h-auto rounded"
                         />
-                        <Flex mt={3} justifyContent="center" gap={3}>
+                        <div className="mt-3 flex justify-center gap-3">
                             <Button
                                 colorScheme="green"
                                 onClick={capturePhoto}
@@ -136,29 +122,19 @@ function ImageCapture({ onImageCapture, showImportFromSystem = true }) {
                             >
                                 Cancelar
                             </Button>
-                        </Flex>
-                    </Box>
-                </Box>
+                        </div>
+                    </div>
+                </div>
             ) : (
-                <Box
-                    mb={3}
-                    width="180px"
-                    height="240px"
-                    bg="gray.100"
-                    borderRadius="md"
-                    margin="0 auto"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    color="gray.500"
-                    border="1px dashed gray.300"
+                <div
+                    className="mb-3 w-48 h-64 bg-gray-100 rounded-md mx-auto flex items-center justify-center text-gray-500 border border-dashed border-gray-300"
                 >
-                    <Text textAlign="center">Sem foto</Text>
-                </Box>
+                    <span className="text-center">Sem foto</span>
+                </div>
             )}
 
             {/* Botões para interação */}
-            <Flex justifyContent="center" gap={2} wrap="wrap" mt={2}>
+            <div className="flex justify-center gap-2 flex-wrap mt-2">
                 {!showCamera && (
                     <>
                         <Button
@@ -217,8 +193,8 @@ function ImageCapture({ onImageCapture, showImportFromSystem = true }) {
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                 />
-            </Flex>
-        </Box>
+            </div>
+        </div>
     );
 }
 

@@ -146,10 +146,7 @@ export const NavButtons = ({ auth, handleLogout, onMilitaryOpen }) => {
               <Icon as={FaClipboardList} mr={2} />
               Ver Agendamentos
             </MenuItem>
-            <MenuItem as={Link} to="/visitantes-agendados">
-              <Icon as={FaUsers} mr={2} />
-              Visitantes Agendados
-            </MenuItem>
+
           </MenuList>
         </Menu>
       )}
