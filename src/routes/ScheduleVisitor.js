@@ -1,7 +1,7 @@
 
 import Navbar from "../components/Navbar";
 import Unauthorized from "../components/Unauthorized";
-import ScheduleVisitorForm from "../components/ScheduleVisitor/ScheduleVisitorForm";
+import ScheduleVisitorForm from "../components/features/Visitor/ScheduleVisitorForm";
 import { useAuth } from "../context/AuthContext";
 import { Box } from "@chakra-ui/react";
 

@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import Unauthorized from "../components/Unauthorized";
 import { useAuth } from "../context/AuthContext";
 import { useScheduledVisitors } from "../hooks/useScheduledVisitors";
-import ScheduledVisitorCard from "../components/ScheduledVisitors/ScheduledVisitorCard";
+import ScheduledVisitorCard from "../components/features/Visitor/ScheduledVisitorCard";
 
 const ScheduledVisitors = () => {
     const auth = useAuth();

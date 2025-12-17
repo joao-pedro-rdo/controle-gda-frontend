@@ -1,8 +1,9 @@
-import { Badge, Button, Box, Text } from "@chakra-ui/react";
+import { Badge, Button } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import VisitorInfo from "./VisitorInfo";
 
 const ScheduledVisitorCard = ({ visitor }) => {
     const auth = useAuth();
@@ -23,12 +24,12 @@ const ScheduledVisitorCard = ({ visitor }) => {
                 </Badge>
             </div>
             <div className="p-4 space-y-2">
-                <p className="text-sm text-gray-600"><strong>CPF:</strong> {visitor.idNumber}</p>
-                <p className="text-sm text-gray-600"><strong>Telefone:</strong> {visitor.phoneNumber || "N/A"}</p>
-                <p className="text-sm text-gray-600"><strong>Veículo:</strong> {`${visitor.carModel} - ${visitor.color}`}</p>
-                <p className="text-sm text-gray-600"><strong>Placa:</strong> {visitor.licensePlate}</p>
-                <p className="text-sm text-gray-600"><strong>Destino:</strong> {visitor.target}</p>
-                <p className="text-sm text-gray-600"><strong>Contato:</strong> {visitor.contactPerson}</p>
+                <VisitorInfo label="CPF" value={visitor.idNumber} />
+                <VisitorInfo label="Telefone" value={visitor.phoneNumber} />
+                <VisitorInfo label="Veículo" value={`${visitor.carModel} - ${visitor.color}`} />
+                <VisitorInfo label="Placa" value={visitor.licensePlate} />
+                <VisitorInfo label="Destino" value={visitor.target} />
+                <VisitorInfo label="Contato" value={visitor.contactPerson} />
             </div>
             <div className="p-4 bg-gray-50 border-t border-gray-200 text-center">
                 <p className="text-sm font-medium text-gray-800">Horário Agendado</p>
