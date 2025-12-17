@@ -9,16 +9,15 @@ export const useColors = () => {
   useEffect(() => {
     loadColors();
 
-    // Listener para atualizações
-    const handleColorsUpdate = (e) => {
+    const handleColorsUpdate = (e: CustomEvent<ColorsUpdateDetail>) => {
       setPrimaryColor(e.detail.primaryColor);
       setSecondaryColor(e.detail.secondaryColor);
     };
 
-    window.addEventListener('colorsUpdated', handleColorsUpdate);
+    window.addEventListener('colorsUpdated', handleColorsUpdate as EventListener);
     
     return () => {
-      window.removeEventListener('colorsUpdated', handleColorsUpdate);
+      window.removeEventListener('colorsUpdated', handleColorsUpdate as EventListener);
     };
   }, []);
 
@@ -41,7 +40,7 @@ export const useColors = () => {
     }
   };
 
-  const updateColors = async (primary, secondary) => {
+  const updateColors = async (primary: string, secondary: string) => {
     try {
       await client.post('/settings/colors', {
         primaryColor: primary,
