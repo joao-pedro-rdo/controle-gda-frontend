@@ -1,6 +1,5 @@
-import { Badge, Box, Button, Input, Select, Text } from "@chakra-ui/react";
+import { Badge, Box, Button, Input, Select, Text, useMediaQuery } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Unauthorized from "../components/Unauthorized";
 import { useAuth } from "../context/AuthContext";
@@ -11,6 +10,7 @@ const Users = () => {
   const [data, setData] = useState();
   const [deleted, setDeleted] = useState(null);
   const [reload, setReload] = useState(false);
+  const [isMd] = useMediaQuery("(min-width: 800px)");
 
   useEffect(() => {
     const request = async () => {
@@ -51,20 +51,23 @@ const Users = () => {
   }
 
   return (
-    <>
+    <section className="flex flex-col gap-4">
       <Navbar />
-      <Wrapper>
-        <Box w="90%" p={3}>
-          <form onSubmit={handleSubmit}>
+
+      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
+        <Box w="100%" p={3}>
+          <form onSubmit={handleSubmit} className="w-[100%]">
             <Badge fontSize="1.1rem" mb="1rem" colorScheme="red">
               Cadastrar Usuário
             </Badge>
-            <Box display={"flex"} justifyContent={"space-between"}>
+            <Box 
+              className={`${isMd ? "flex gap-4" : "flex flex-col gap-4"}`}
+            >
               <label htmlFor="login">
-                Login: <StyledInput type="text" name="newLogin" />
+                Login: <Input className="w-[90%] mb-4" type="text" name="newLogin" />
               </label>
               <label htmlFor="password">
-                Senha: <StyledInput type="password" name="newPassword" />
+                Senha: <Input className="w-[90%] mb-4" type="password" name="newPassword" />
               </label>
               <label htmlFor="role">
                 Permissões:{" "}
@@ -80,24 +83,24 @@ const Users = () => {
                 </Select>
               </label>
 
-              <Button colorScheme="red" type="submit">
+              <Button colorScheme="red" type="submit" className="self-center">
                 Cadastrar
               </Button>
             </Box>
           </form>
         </Box>
-      </Wrapper>
+      </article>
 
-      <Wrapper>
+      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
         {data &&
           data.map((user) => {
             return (
-              <Card key={user.id}>
-                <Text w={"30%"} textAlign="center">
+              <article className="flex justify-between w-[100%] p-2" key={user.id}>
+                <Text className="flex w-full p-2 gap-2" textAlign="center">
                   <strong>Usuário: </strong>
                   <p>{user.login}</p>
                 </Text>
-                <Text w={"30%"} textAlign="center">
+                <Text className="flex w-full p-2 gap-2" textAlign="center">
                   <strong>Permissão: </strong>
                   <p>{user.role}</p>
                 </Text>
@@ -111,41 +114,12 @@ const Users = () => {
                 ) : (
                   <Box minW={20}></Box>
                 )}
-              </Card>
+              </article>
             );
           })}
-      </Wrapper>
-    </>
+      </article>
+    </section>
   );
 };
-
-const Wrapper = styled.div`
-  border: 1px solid #ccc;
-  display: flex;
-  justify-content: space-evenly;
-  width: 90%;
-  margin: auto;
-  margin-top: 2rem;
-  padding: 1rem;
-  border-radius: 1rem;
-  background-color: white;
-  flex-wrap: wrap;
-`;
-
-export const StyledInput = styled(Input)`
-  width: 90%;
-  margin-bottom: 1rem;
-`;
-
-const Card = styled.div`
-  padding: 0.7rem;
-  border: 1px solid #ccc;
-  margin: 0.7rem;
-  border-radius: 1rem;
-  display: flex;
-  min-width: 500px;
-  justify-content: space-between;
-  align-items: center;
-`;
 
 export default Users;
