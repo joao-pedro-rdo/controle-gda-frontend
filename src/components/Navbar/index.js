@@ -29,6 +29,7 @@ import {
   FaKey,
   FaSignOutAlt,
   FaChevronDown,
+  FaCog, // 🔧 Ícone de Configurações
 } from "react-icons/fa";
 import styled from "styled-components";
 import MilitaryPopup from "./MilitaryPopup";
