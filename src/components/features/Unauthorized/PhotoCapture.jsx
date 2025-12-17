@@ -1,12 +1,8 @@
-// Arquivo: front/src/components/PhotoCapture/index.js
-// Se não existir, usar o mesmo do VisitorForm
-
 import React, { useState, useRef } from "react";
 import {
   Box,
   Button,
   VStack,
-  Text,
   Modal,
   ModalOverlay,
   ModalContent,
