@@ -120,96 +120,98 @@ const ListPermissionarios = () => {
         >
           Novo Permissionário
         </Button>
-        <Table variant="striped" colorScheme="gray" size="sm">
-          <Thead>
-            <Tr>
-              <Th textAlign="center">Foto</Th>
-              <Th textAlign="center">Nome Completo</Th>
-              <Th textAlign="center">Identidade</Th>
-              <Th textAlign="center">CPF</Th>
-              <Th textAlign="center">Local</Th>
-              <Th textAlign="center">Veículo</Th>
-              <Th textAlign="center">Placa</Th>
-              <Th textAlign="center">Cor</Th>
-              <Th textAlign="center">QR Code</Th>
-              <Th textAlign="center">Ações</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {permissionarios.map((p) => (
-              <Tr key={p.id}>
-                <Td textAlign="center">
-                  {p.imagePath ? (
-                    <AuthenticatedImage
-                      imagePath={p.imagePath}
-                      alt={p.completeName}
-                      boxSize="60px"
-                      objectFit="cover"
-                      borderRadius="md"
-                    />
-                  ) : (
-                    <Box
-                      boxSize="60px"
-                      bg="gray.200"
-                      borderRadius="md"
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      fontSize="xs"
-                      color="gray.500"
-                    >
-                      Sem foto
-                    </Box>
-                  )}
-                </Td>
-                <Td textAlign="center">{p.completeName}</Td>
-                <Td textAlign="center">{p.idNumber}</Td>
-                <Td textAlign="center">{p.CPF}</Td>
-                <Td textAlign="center">{p.local || "N/A"}</Td>
-                <Td textAlign="center">{p.carModel || "N/A"}</Td>
-                <Td textAlign="center">{p.licensePlate || "N/A"}</Td>
-                <Td textAlign="center">{p.color || "N/A"}</Td>
-                <Td textAlign="center">
-                  {qrCodes[p.id] ? (
-                    <Image
-                      src={qrCodes[p.id]}
-                      alt="QR Code"
-                      boxSize="50px"
-                      cursor="pointer"
-                      onClick={() => handleDownloadQRCode(p)}
-                      title="Clique para baixar o QR Code"
-                    />
-                  ) : (
-                    <Button
-                      size="xs"
-                      colorScheme="blue"
-                      onClick={() => generateQRCode(p)}
-                    >
-                      Gerar QR
-                    </Button>
-                  )}
-                </Td>
-                <Td textAlign="center">
-                  <Button
-                    size="sm"
-                    colorScheme="yellow"
-                    mr={2}
-                    onClick={() => handleEdit(p.id)}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    size="sm"
-                    colorScheme="red"
-                    onClick={() => handleDelete(p.id)}
-                  >
-                    Excluir
-                  </Button>
-                </Td>
+        <div className="w-full overflow-x-auto">
+          <Table variant="striped" colorScheme="gray" size="sm">
+            <Thead>
+              <Tr>
+                <Th textAlign="center">Foto</Th>
+                <Th textAlign="center">Nome Completo</Th>
+                <Th textAlign="center">Identidade</Th>
+                <Th textAlign="center">CPF</Th>
+                <Th textAlign="center">Local</Th>
+                <Th textAlign="center">Veículo</Th>
+                <Th textAlign="center">Placa</Th>
+                <Th textAlign="center">Cor</Th>
+                <Th textAlign="center">QR Code</Th>
+                <Th textAlign="center">Ações</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
+            </Thead>
+            <Tbody>
+              {permissionarios.map((p) => (
+                <Tr key={p.id}>
+                  <Td textAlign="center">
+                    {p.imagePath ? (
+                      <AuthenticatedImage
+                        imagePath={p.imagePath}
+                        alt={p.completeName}
+                        boxSize="60px"
+                        objectFit="cover"
+                        borderRadius="md"
+                      />
+                    ) : (
+                      <Box
+                        boxSize="60px"
+                        bg="gray.200"
+                        borderRadius="md"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        fontSize="xs"
+                        color="gray.500"
+                      >
+                        Sem foto
+                      </Box>
+                    )}
+                  </Td>
+                  <Td textAlign="center">{p.completeName}</Td>
+                  <Td textAlign="center">{p.idNumber}</Td>
+                  <Td textAlign="center">{p.CPF}</Td>
+                  <Td textAlign="center">{p.local || "N/A"}</Td>
+                  <Td textAlign="center">{p.carModel || "N/A"}</Td>
+                  <Td textAlign="center">{p.licensePlate || "N/A"}</Td>
+                  <Td textAlign="center">{p.color || "N/A"}</Td>
+                  <Td textAlign="center">
+                    {qrCodes[p.id] ? (
+                      <Image
+                        src={qrCodes[p.id]}
+                        alt="QR Code"
+                        boxSize="50px"
+                        cursor="pointer"
+                        onClick={() => handleDownloadQRCode(p)}
+                        title="Clique para baixar o QR Code"
+                      />
+                    ) : (
+                      <Button
+                        size="xs"
+                        colorScheme="blue"
+                        onClick={() => generateQRCode(p)}
+                      >
+                        Gerar QR
+                      </Button>
+                    )}
+                  </Td>
+                  <Td textAlign="center">
+                    <Button
+                      size="sm"
+                      colorScheme="yellow"
+                      mr={2}
+                      onClick={() => handleEdit(p.id)}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      size="sm"
+                      colorScheme="red"
+                      onClick={() => handleDelete(p.id)}
+                    >
+                      Excluir
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </div>
       </Box>
     </>
   );
