@@ -91,11 +91,11 @@ const Users = () => {
         </Box>
       </article>
 
-      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex h-auto self-center rounded-xl justify-center border-2`}>
+      <article className={`${isMd ? "w-[70%]  max-w-4xl" : "w-[80%]"} flex flex-col h-auto self-center rounded-xl justify-center border-2`}>
         {data &&
           data.map((user) => {
             return (
-              <article className="flex justify-between w-[100%] p-2" key={user.id}>
+              <article className={`flex w-[100%] p-2 ${isMd ? "flex-row" : "flex-col rounded-lg border-2 "}`} key={user.id}>
                 <Text className="flex w-full p-2 gap-2" textAlign="center">
                   <strong>Usuário: </strong>
                   <p>{user.login}</p>
