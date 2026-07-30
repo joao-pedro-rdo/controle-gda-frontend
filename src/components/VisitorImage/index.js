@@ -1,7 +1,8 @@
 import React from "react";
 import { Image, Box, Text } from "@chakra-ui/react";
+import { getAssetUrl } from "../../services/api-config";
 
-const VisitorImage = ({ imagePath, alt = "Foto do usuário" }) => {
+const VisitorImage = ({ imagePath, alt = "Foto do usuario" }) => {
     if (!imagePath) {
         return (
             <Box
@@ -22,10 +23,7 @@ const VisitorImage = ({ imagePath, alt = "Foto do usuário" }) => {
         );
     }
 
-    // Construir a URL completa da imagem
-    const imageUrl = imagePath.startsWith('http')
-        ? imagePath
-        : `${process.env.REACT_APP_API_URL}${imagePath}`;
+    const imageUrl = getAssetUrl(imagePath);
 
     return (
         <Image

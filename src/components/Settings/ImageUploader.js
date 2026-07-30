@@ -2,8 +2,6 @@ import React, { useRef, useState } from 'react';
 import { FaCloudUploadAlt, FaImage, FaCheckCircle, FaSpinner, FaTrash } from 'react-icons/fa';
 import client from '../../services/client';
 
-const API_BASE_URL = 'http://localhost:5000';
-
 const ImageUploader = ({ 
   title, 
   description, 
@@ -25,16 +23,16 @@ const ImageUploader = ({
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Validar tamanho do arquivo (máx 5MB)
+      // Validar tamanho do arquivo (mÃ¡x 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('O arquivo deve ter no máximo 5MB');
+        alert('O arquivo deve ter no mÃ¡ximo 5MB');
         return;
       }
 
       // Validar tipo de arquivo
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        alert('Por favor, selecione uma imagem válida (JPEG, PNG, GIF ou WEBP)');
+        alert('Por favor, selecione uma imagem vÃ¡lida (JPEG, PNG, GIF ou WEBP)');
         return;
       }
 
@@ -69,7 +67,7 @@ const ImageUploader = ({
       // Notificar componente pai
       onImageUpdate(data.path || data.imagePath);
       
-      // Limpar seleção
+      // Limpar seleÃ§Ã£o
       setSelectedFile(null);
       setPreview(null);
       fileInputRef.current.value = '';
@@ -82,7 +80,7 @@ const ImageUploader = ({
       const errorMessage = error.response?.data?.message || error.message;
       
       if (error.response?.status === 403) {
-        alert('Você não tem permissão para alterar as imagens do sistema (necessário perfil S2)');
+        alert('VocÃª nÃ£o tem permissÃ£o para alterar as imagens do sistema (necessÃ¡rio perfil S2)');
       } else {
         alert(`Erro: ${errorMessage}`);
       }
@@ -92,7 +90,7 @@ const ImageUploader = ({
   };
 
   const handleReset = async () => {
-    if (!window.confirm(`Deseja restaurar a ${title.toLowerCase()} padrão?`)) {
+    if (!window.confirm(`Deseja restaurar a ${title.toLowerCase()} padrÃ£o?`)) {
       return;
     }
 
@@ -114,7 +112,7 @@ const ImageUploader = ({
       const errorMessage = error.response?.data?.message || error.message;
       
       if (error.response?.status === 403) {
-        alert('Você não tem permissão para alterar as imagens do sistema (necessário perfil S2)');
+        alert('VocÃª nÃ£o tem permissÃ£o para alterar as imagens do sistema (necessÃ¡rio perfil S2)');
       } else {
         alert(`Erro: ${errorMessage}`);
       }
@@ -148,7 +146,7 @@ const ImageUploader = ({
           onClick={handleReset}
           disabled={resetting}
           className="px-3 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center"
-          title="Restaurar imagem padrão"
+          title="Restaurar imagem padrÃ£o"
         >
           {resetting ? (
             <FaSpinner className="animate-spin" />
@@ -183,7 +181,7 @@ const ImageUploader = ({
         </div>
       </div>
 
-      {/* Área de Upload */}
+      {/* Ãrea de Upload */}
       <div
         onClick={handleClick}
         className="relative border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-200"
@@ -211,7 +209,7 @@ const ImageUploader = ({
               <div>
                 <p className="text-sm font-medium text-gray-900">Clique para selecionar</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  JPEG, PNG, GIF, WEBP até 5MB
+                  JPEG, PNG, GIF, WEBP atÃ© 5MB
                 </p>
               </div>
             </div>
@@ -219,7 +217,7 @@ const ImageUploader = ({
         </div>
       </div>
 
-      {/* Ações */}
+      {/* AÃ§Ãµes */}
       {selectedFile && (
         <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
           <div className="flex items-center">

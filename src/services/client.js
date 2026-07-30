@@ -1,21 +1,23 @@
 import axios from "axios";
-console.log("🔍 API URL:", process.env.REACT_APP_API_URL);
+import { getApiBaseUrl } from "./api-config";
+
+const apiBaseUrl = getApiBaseUrl();
+
+console.log("API URL configurada:", process.env.REACT_APP_API_URL);
+console.log("API URL efetiva:", apiBaseUrl);
 
 const client = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5000", // 🔧 Usar a variável correta com fallback
+  baseURL: apiBaseUrl,
   timeout: 10000,
-  withCredentials: true, // 🔒 ESSENCIAL para cookies
+  withCredentials: true,
 });
 
-// Debug para ambiente Nginx
 client.interceptors.request.use(
   (config) => {
-    console.log("🚀 Requisição:", config.method?.toUpperCase(), config.url);
+    console.log("Requisicao:", config.method?.toUpperCase(), config.url);
 
-    // 🔧 Log específico para multipart
     if (config.data instanceof FormData) {
-      console.log("📦 Enviando FormData (multipart)");
-      // Não definir Content-Type manualmente para FormData
+      console.log("Enviando FormData (multipart)");
       delete config.headers["Content-Type"];
     }
 
@@ -29,12 +31,12 @@ client.interceptors.request.use(
 
 client.interceptors.response.use(
   (response) => {
-    console.log("✅ Resposta via Nginx:", response.config.url, response.status);
+    console.log("Resposta:", response.config.url, response.status);
     return response;
   },
   (error) => {
     console.error(
-      "❌ Erro na resposta:",
+      "Erro na resposta:",
       error.config?.url,
       error.response?.status
     );
@@ -43,7 +45,7 @@ client.interceptors.response.use(
       const currentPath = window.location.pathname;
 
       if (currentPath !== "/login") {
-        console.log("Token inválido, redirecionando para login...");
+        console.log("Token invalido, redirecionando para login...");
         setTimeout(() => {
           window.location.href = "/login";
         }, 100);

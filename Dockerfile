@@ -4,6 +4,9 @@ FROM node:22 AS build
 # Definir o diretório de trabalho
 WORKDIR /app
 
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 # Copiar o arquivo package.json para o diretório de trabalho
 COPY package.json .
 
@@ -21,4 +24,3 @@ EXPOSE 3000
 
 # Configurar nginx para ouvir na porta 3000
 COPY nginx-front.conf /etc/nginx/conf.d/default.conf
-
