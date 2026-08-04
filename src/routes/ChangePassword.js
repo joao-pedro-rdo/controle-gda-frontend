@@ -54,7 +54,16 @@ const ChangePassword = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      return toast({
+        title: "Erro",
+        description:
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Erro ao alterar senha",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
