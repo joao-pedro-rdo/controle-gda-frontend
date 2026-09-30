@@ -7,13 +7,13 @@ WORKDIR /app
 ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
-# Copiar o arquivo package.json para o diretório de trabalho
-COPY package.json .
+# Instalar exatamente as dependências registradas no lockfile
+COPY package.json package-lock.json ./
+RUN npm ci
 
 # Copiar os arquivos da aplicação
 COPY . .
 
-RUN npm install
 RUN npm run build
 
 
