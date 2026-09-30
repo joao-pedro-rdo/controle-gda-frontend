@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7
 # Usar uma imagem de Node.js como base (atualize para Node 18)
 FROM node:22 AS build
 
@@ -9,12 +10,17 @@ ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 # Instalar exatamente as dependências registradas no lockfile
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=secret,id=npm-ca,required=false \
+    if [ -s /run/secrets/npm-ca ]; then \
+      NODE_EXTRA_CA_CERTS=/run/secrets/npm-ca npm ci; \
+    else \
+      npm ci; \
+    fi
 
 # Copiar os arquivos da aplicação
 COPY . .
 
-RUN npm run build
+RUN CI=false npm run build
 
 
 # Etapa 2 - Usar nginx para servir os arquivos estáticos
