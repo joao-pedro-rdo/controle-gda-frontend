@@ -33,7 +33,6 @@ const Users = () => {
       await client.post("/signup", newUser);
       setReload(!reload);
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -42,7 +41,6 @@ const Users = () => {
       await client.delete(`/deleteUser/${id}`);
       setReload(!reload);
     } catch (error) {
-      console.log(error);
     }
   };
 

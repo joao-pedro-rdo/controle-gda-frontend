@@ -32,7 +32,6 @@ const Dashboard = () => {
       const entryResponse = await client.get(`/entries/${id}`);
       const entryData = entryResponse.data;
 
-      console.log("📋 Dados da entrada para saída:", entryData);
 
       // 🎯 USAR NOVA ROTA ESPECÍFICA PARA SAÍDAS
       const exitPayload = {
@@ -55,7 +54,6 @@ const Dashboard = () => {
         exitPayload.CPF = entryData.idNumber;
       }
 
-      console.log("📤 Payload da saída sendo enviado:", exitPayload);
 
       // Chamar nova rota de saída
       const response = await client.post("/exits", exitPayload, {
@@ -64,7 +62,6 @@ const Dashboard = () => {
         },
       });
 
-      console.log("✅ Saída registrada com sucesso:", response.data);
 
       // Recarregar os dados após a atualização
       const entriesResponse = await client.get("/entries");

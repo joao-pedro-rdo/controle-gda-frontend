@@ -14,7 +14,6 @@ const QRCodeSection = ({ vehicleId }) => {
                     const response = await client.get(`/vehicles/${vehicleId}`);
                     setVehicle(response.data);
                 } catch (error) {
-                    console.log(error);
                 }
             };
             fetchVehicle();
@@ -29,7 +28,6 @@ const QRCodeSection = ({ vehicleId }) => {
                     const response = await QRCode.toDataURL(stringify);
                     setImgUrl(response);
                 } catch (error) {
-                    console.log(error);
                 }
             };
             generateQRCode();

@@ -44,7 +44,6 @@ const ChangePassword = () => {
           isClosable: true,
         });
       } else {
-        console.log(response);
         return toast({
           title: "Ok",
           description: "Senha alterada com sucesso",

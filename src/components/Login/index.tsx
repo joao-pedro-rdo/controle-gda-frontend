@@ -28,7 +28,6 @@ const Login: React.FC = () => {
       if (result.success) {
         navigate(from === "/login" ? "/" : from, { replace: true });
       } else {
-        console.log("Login falhou:", result.message);
       }
     } catch (error) {
       console.error("Erro no submit do login:", error);

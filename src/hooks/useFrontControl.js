@@ -14,7 +14,6 @@ export const useFrontControl = (scanResult, setIsProcessing) => {
   useEffect(() => {
     if (!scanResult) return;
 
-    console.log('Processando scanResult:', scanResult);
     setHasApiResponse(false);
     setAuthorized(null);
 

@@ -11,7 +11,6 @@ export const useEntryRegistration = () => {
     const lastEntry = recentEntries.get(identifier);
 
     if (lastEntry && now - lastEntry < 45000) {
-      console.log('⚠️ Entrada recente detectada para:', identifier);
       return true;
     }
 

@@ -151,7 +151,6 @@ const PermissionarioForm: React.FC<PermissionarioFormProps> = ({
 
     if (selectedFile) {
       submitData.append("image", selectedFile);
-      console.log("🖼️ Arquivo selecionado adicionado ao FormData");
     } else if (imageBase64) {
       const base64Data = imageBase64.split(",")[1];
       const byteCharacters = atob(base64Data);
@@ -165,14 +164,12 @@ const PermissionarioForm: React.FC<PermissionarioFormProps> = ({
       const blob = new Blob([byteArray], { type: "image/jpeg" });
 
       submitData.append("image", blob, "permissionario.jpg");
-      console.log("🖼️ Imagem capturada adicionada ao FormData");
     } else if (toEdit && currentImage && !previewImage) {
       submitData.append("keepExistingImage", "true");
     } else if (toEdit && !currentImage) {
       submitData.append("removeImage", "true");
     }
 
-    console.log("📤 Enviando permissionário multipart...");
 
     try {
       if (toEdit?.id) {
@@ -202,7 +199,6 @@ const PermissionarioForm: React.FC<PermissionarioFormProps> = ({
       }
 
       setReload(!reload);
-      console.log("✅ Permissionário salvo com sucesso");
     } catch (error: any) {
       console.error("❌ Erro ao salvar permissionário:", error);
 

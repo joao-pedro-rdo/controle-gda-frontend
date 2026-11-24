@@ -3,8 +3,6 @@ import { getApiBaseUrl } from "./api-config";
 
 const apiBaseUrl = getApiBaseUrl();
 
-console.log("API URL configurada:", process.env.REACT_APP_API_URL);
-console.log("API URL efetiva:", apiBaseUrl);
 
 const client = axios.create({
   baseURL: apiBaseUrl,
@@ -14,10 +12,8 @@ const client = axios.create({
 
 client.interceptors.request.use(
   (config) => {
-    console.log("Requisicao:", config.method?.toUpperCase(), config.url);
 
     if (config.data instanceof FormData) {
-      console.log("Enviando FormData (multipart)");
       delete config.headers["Content-Type"];
     }
 
@@ -31,7 +27,6 @@ client.interceptors.request.use(
 
 client.interceptors.response.use(
   (response) => {
-    console.log("Resposta:", response.config.url, response.status);
     return response;
   },
   (error) => {
@@ -45,7 +40,6 @@ client.interceptors.response.use(
       const currentPath = window.location.pathname;
 
       if (currentPath !== "/login") {
-        console.log("Token invalido, redirecionando para login...");
         setTimeout(() => {
           window.location.href = "/login";
         }, 100);

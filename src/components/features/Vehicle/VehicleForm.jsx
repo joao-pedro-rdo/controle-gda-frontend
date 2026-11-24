@@ -23,7 +23,6 @@ const VehicleForm = () => {
                     const response = await client.get(`/vehicles/${id}`);
                     setToEdit(response.data);
                 } catch (error) {
-                    console.log(error);
                 }
             };
             fetchVehicle();

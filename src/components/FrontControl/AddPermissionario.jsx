@@ -27,7 +27,6 @@ const PermissionarioPopup = ({ isOpen, onClose, onSelect }) => {
         .get("/permissionarios")
         .then((res) => {
           setPermissionarios(res.data);
-          console.log("📋 Permissionários carregados:", res.data.length);
         })
         .catch((error) => {
           console.error("❌ Erro ao carregar permissionários:", error);

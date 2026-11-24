@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setIsAuthenticated(true);
 
-      console.log("Login realizado com sucesso:", userData);
       return { success: true };
     } catch (error) {
       console.error("Erro no login:", error);
@@ -48,20 +47,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        console.log("🍪 Verificando autenticação via /api/auth/check...");
         const response = await client.get("/auth/check"); // URL relativa
 
         if (response.data.authenticated) {
           setUser(response.data.user);
           setIsAuthenticated(true);
-          console.log("✅ Usuário autenticado via Nginx:", response.data.user);
         } else {
           setUser(null);
           setIsAuthenticated(false);
-          console.log("❌ Usuário não autenticado");
         }
       } catch (error) {
-        console.log("❌ Erro na verificação de autenticação:", error);
         setUser(null);
         setIsAuthenticated(false);
       } finally {

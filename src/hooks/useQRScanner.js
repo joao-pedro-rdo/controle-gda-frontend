@@ -33,7 +33,6 @@ export const useQRScanner = () => {
   // Handler para câmera
   const handleScanWebCam = (result, rawText) => {
     setRawQrData(rawText);
-    console.log('QR code lido via câmera:', result);
 
     if (result && !isProcessing) {
       setIsProcessing(true);
@@ -44,7 +43,6 @@ export const useQRScanner = () => {
   // Handler para leitor físico
   const handleInputChange = () => {
     const currentValue = inputRef.current.value;
-    console.log('Entrada do leitor físico:', currentValue);
 
     // Verificação de bateria
     if (currentValue.length === 3 && currentValue[0] >= 0) {
@@ -62,7 +60,6 @@ export const useQRScanner = () => {
     if (currentValue.length > 20 && currentValue[currentValue.length - 1] === '}') {
       try {
         const parsedData = JSON.parse(currentValue);
-        console.log('Dados do QR code parseados:', parsedData);
 
         if (parsedData.permissionario) {
           setScanResult({ permissionario: parsedData.permissionario });

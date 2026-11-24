@@ -41,7 +41,7 @@ const QRCodeInput = ({ onScan, onError, showRawData = false }) => {
             try {
                 if (qrScanner) {
                     // Parar o scanner existente antes de iniciar um novo
-                    await qrScanner.stop().catch(e => console.log("Erro ao parar scanner:", e));
+                    await qrScanner.stop().catch(() => {});
                     qrScanner.clear();
                     // Pequena pausa para garantir que recursos sejam liberados
                     await new Promise(resolve => setTimeout(resolve, 300));
@@ -124,7 +124,6 @@ const QRCodeInput = ({ onScan, onError, showRawData = false }) => {
             onScan(result, decodedText);
         } catch (error) {
             // Se não conseguir parsear, mostrar o erro e o texto bruto para depuração
-            console.log("Texto QR bruto:", decodedText);
 
             if (showRawData) {
                 // Chamar onScan apenas com o texto bruto (não parseado)

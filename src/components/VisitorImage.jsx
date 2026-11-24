@@ -29,7 +29,6 @@ const VisitorImage = ({
                 // Extrair o nome do arquivo do imagePath
                 const filename = imagePath.split('/').pop();
 
-                console.log("Carregando imagem via API autenticada:", filename);
 
                 // Determinar endpoint correto
                 let endpoint;

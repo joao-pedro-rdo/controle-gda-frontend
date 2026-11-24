@@ -71,11 +71,6 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
       const initialToRequest = new Date(initialDate).toISOString();
       const finalDateToRequest = new Date(finalDate).toISOString();
 
-      console.log("🔍 Buscando militares (mesma lógica do Report):", {
-        dateString,
-        initialToRequest,
-        finalDateToRequest,
-      });
 
       const response = await client.post("/entries/byDate", {
         initialDate: initialToRequest,
@@ -87,7 +82,6 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
         (entry) => !entry.isVisitor && !entry.isPermissionario
       );
 
-      console.log("👥 Militares encontrados:", military.length);
       setMilitaryEntries(military);
     } catch (error) {
       console.error("❌ Erro ao buscar militares:", error);
@@ -125,14 +119,6 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
       const initialToRequest = initialDateTime.toISOString();
       const finalDateToRequest = finalDateTime.toISOString();
 
-      console.log("🔍 Buscando militares com range customizado:", {
-        startDate,
-        endDate,
-        startTime,
-        endTime,
-        initialToRequest,
-        finalDateToRequest,
-      });
 
       const response = await client.post("/entries/byDate", {
         initialDate: initialToRequest,
@@ -144,7 +130,6 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
         (entry) => !entry.isVisitor && !entry.isPermissionario
       );
 
-      console.log("👥 Militares encontrados:", military.length);
       setMilitaryEntries(military);
 
       toast({
