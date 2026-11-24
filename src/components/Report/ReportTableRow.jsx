@@ -1,11 +1,15 @@
 import { format } from 'date-fns';
 import VisitorImage from '../VisitorImage';
 import { getUserType } from '../../utils/reportHelpers';
+import { formatCpf } from '../../utils/validation';
 
 const ReportTableRow = ({ entry, mobile = false }) => {
   const formattedTime = format(new Date(entry.time), 'HH:mm:ss');
   const formattedDate = format(new Date(entry.time), 'dd/MM/yyyy');
   const userType = getUserType(entry);
+  const idNumber = entry.isVisitor ? formatCpf(entry.idNumber) : entry.idNumber;
+  // Visitante sem placa registrada entrou a pé.
+  const plate = entry.licensePlate || (entry.isVisitor ? 'A pé' : '');
 
   // Badges de cor por tipo
   const typeColors = {
@@ -55,7 +59,7 @@ const ReportTableRow = ({ entry, mobile = false }) => {
             <dl className="space-y-1">
               <div className="flex justify-between text-xs">
                 <dt className="text-gray-500">ID:</dt>
-                <dd className="text-gray-900 font-medium">{entry.idNumber}</dd>
+                <dd className="text-gray-900 font-medium">{idNumber}</dd>
               </div>
               <div className="flex justify-between text-xs">
                 <dt className="text-gray-500">Contato:</dt>
@@ -63,7 +67,7 @@ const ReportTableRow = ({ entry, mobile = false }) => {
               </div>
               <div className="flex justify-between text-xs">
                 <dt className="text-gray-500">Placa:</dt>
-                <dd className="text-gray-900 font-medium">{entry.licensePlate}</dd>
+                <dd className="text-gray-900 font-medium">{plate}</dd>
               </div>
               <div className="flex justify-between text-xs">
                 <dt className="text-gray-500">Veículo:</dt>
@@ -110,13 +114,13 @@ const ReportTableRow = ({ entry, mobile = false }) => {
         </span>
       </td>
       <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
-        {entry.idNumber}
+        {idNumber}
       </td>
       <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
         {entry.phoneNumber || (entry.isPermissionario ? entry.CPF : 'N/A')}
       </td>
       <td className="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-        {entry.licensePlate}
+        {plate}
       </td>
       <td className="px-3 py-4 text-sm text-gray-900">
         {entry.carModel} - {entry.color}

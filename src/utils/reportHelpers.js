@@ -36,7 +36,8 @@ export const filterBySearchTerm = (data, searchTerm) => {
   if (!data || !searchTerm) return data;
   
   const term = searchTerm.toLowerCase();
-  
+  const termDigits = searchTerm.replace(/\D/g, '');
+
   return data.filter((item) =>
     (item.name && item.name.toLowerCase().includes(term)) ||
     (item.licensePlate && item.licensePlate.toLowerCase().includes(term)) ||
@@ -45,7 +46,10 @@ export const filterBySearchTerm = (data, searchTerm) => {
     (item.carModel && item.carModel.toLowerCase().includes(term)) ||
     (item.contactPerson && item.contactPerson.toLowerCase().includes(term)) ||
     (item.idNumber && item.idNumber.toLowerCase().includes(term)) ||
-    (item.CPF && item.CPF.toLowerCase().includes(term))
+    (item.CPF && item.CPF.toLowerCase().includes(term)) ||
+    // CPF gravado só com dígitos: busca também pela versão sem máscara
+    (termDigits.length >= 3 &&
+      [item.idNumber, item.CPF].some((doc) => doc && String(doc).replace(/\D/g, '').includes(termDigits)))
   );
 };
 

@@ -207,7 +207,10 @@ const PermissionarioForm: React.FC<PermissionarioFormProps> = ({
       console.error("❌ Erro ao salvar permissionário:", error);
 
       let errorMessage = "Erro ao salvar permissionário";
-      if (error.response?.data?.error) {
+      const details: { message?: string }[] = error.response?.data?.details ?? [];
+      if (details.length > 0) {
+        errorMessage = details.map((detail) => detail.message).filter(Boolean).join(" • ");
+      } else if (error.response?.data?.error) {
         errorMessage = error.response.data.error;
       }
 

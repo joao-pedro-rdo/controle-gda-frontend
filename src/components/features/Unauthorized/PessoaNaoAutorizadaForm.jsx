@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast, Button, HStack, VStack, FormControl, FormLabel, Textarea } from "@chakra-ui/react";
 import InputField from "../Visitor/InputField";
 import ImageUpload from "./ImageUpload";
+import { apiErrorMessage } from "../../../utils/validation";
 
 export const PessoaNaoAutorizadaForm = ({
     onClose,
@@ -59,7 +60,7 @@ export const PessoaNaoAutorizadaForm = ({
             console.error("Erro ao salvar pessoa não autorizada:", error);
             toast({
                 title: "Erro ao Salvar",
-                description: "Não foi possível salvar os dados da pessoa. Tente novamente.",
+                description: apiErrorMessage(error, "Não foi possível salvar os dados da pessoa. Tente novamente."),
                 status: "error",
                 duration: 5000,
                 isClosable: true,

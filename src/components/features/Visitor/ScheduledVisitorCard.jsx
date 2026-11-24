@@ -4,6 +4,7 @@ import { ptBR } from "date-fns/locale";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import VisitorInfo from "./VisitorInfo";
+import { formatCpf } from "../../../utils/validation";
 
 const ScheduledVisitorCard = ({ visitor }) => {
     const auth = useAuth();
@@ -24,10 +25,10 @@ const ScheduledVisitorCard = ({ visitor }) => {
                 </Badge>
             </div>
             <div className="p-4 space-y-2">
-                <VisitorInfo label="CPF" value={visitor.idNumber} />
+                <VisitorInfo label="CPF" value={formatCpf(visitor.idNumber)} />
                 <VisitorInfo label="Telefone" value={visitor.phoneNumber} />
                 <VisitorInfo label="Veículo" value={`${visitor.carModel} - ${visitor.color}`} />
-                <VisitorInfo label="Placa" value={visitor.licensePlate} />
+                <VisitorInfo label="Placa" value={visitor.licensePlate || "A pé"} />
                 <VisitorInfo label="Destino" value={visitor.target} />
                 <VisitorInfo label="Contato" value={visitor.contactPerson} />
             </div>

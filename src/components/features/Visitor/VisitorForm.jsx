@@ -1,45 +1,75 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../context/AuthContext";
 import client from "../../../services/client";
 import InputMask from "react-input-mask";
-import { Button, useToast, Alert, AlertIcon, Box } from "@chakra-ui/react";
-import ImageCapture from "./ImageCapture"; // Assuming ImageCapture is in the same folder
+import { Button, Checkbox, useToast, Alert, AlertIcon, Box } from "@chakra-ui/react";
+import ImageCapture from "./ImageCapture";
+import ColorSelect from "../Form/ColorSelect";
 import { useDestinations } from "../../../hooks/useDestinations";
+import { apiErrorMessage, validateFields } from "../../../utils/validation";
+
+const inputClass =
+    "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500";
 
 const VisitorForm = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const auth = useAuth();
     const toast = useToast();
     const { destinations, loading: loadingDestinations } = useDestinations();
 
     const [isLoading, setIsLoading] = useState(false);
     const [scheduledVisitor, setScheduledVisitor] = useState(null);
     const [imageBase64, setImageBase64] = useState(null);
+    const [onFoot, setOnFoot] = useState(false);
 
     useEffect(() => {
-        if (location.state?.scheduledVisitor) {
-            setScheduledVisitor(location.state.scheduledVisitor);
+        const visitor = location.state?.scheduledVisitor;
+        if (visitor) {
+            setScheduledVisitor(visitor);
+            setOnFoot(!visitor.licensePlate);
         }
     }, [location.state]);
 
-    const handleImageCapture = (base64) => {
-        setImageBase64(base64);
-    };
+    const showError = (description) =>
+        toast({ title: "Verifique os dados", description, status: "error", duration: 6000, isClosable: true });
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsLoading(true);
 
         const formData = new FormData(event.currentTarget);
         const data = Object.fromEntries(formData.entries());
 
+        const errors = validateFields(data, {
+            name: ["Nome", "name", true],
+            idNumber: ["CPF", "cpf", true],
+            phoneNumber: ["Telefone", "text", true],
+            contactPerson: ["Contato", "text", true],
+            target: ["Seção de destino", "text", true],
+            ...(onFoot
+                ? {}
+                : {
+                      carModel: ["Modelo", "text", true],
+                      licensePlate: ["Placa", "plate", true],
+                      color: ["Cor", "text", true],
+                  }),
+        });
+        if (!imageBase64 && !scheduledVisitor?.imagePath) {
+            errors.push("Capture ou envie a foto do visitante");
+        }
+        if (errors.length > 0) {
+            showError(errors.join(" • "));
+            return;
+        }
+
+        setIsLoading(true);
         const submitData = new FormData();
-        Object.keys(data).forEach(key => submitData.append(key, data[key]));
+        Object.entries(data).forEach(([key, value]) => submitData.append(key, value));
+        submitData.append("type", "Entrada");
+        submitData.append("isVisitor", "true");
+        submitData.append("onFoot", String(onFoot));
 
         if (imageBase64) {
-            const blob = await fetch(imageBase64).then(res => res.blob());
+            const blob = await fetch(imageBase64).then((res) => res.blob());
             submitData.append("image", blob, "visitor.jpg");
         }
 
@@ -63,12 +93,11 @@ const VisitorForm = () => {
             });
             navigate("/", { replace: true });
         } catch (error) {
-            console.error("Erro ao registrar visitante:", error);
             toast({
                 title: "Erro ao Salvar",
-                description: "Não foi possível registrar a entrada. Tente novamente.",
+                description: apiErrorMessage(error, "Não foi possível registrar a entrada. Tente novamente."),
                 status: "error",
-                duration: 5000,
+                duration: 6000,
                 isClosable: true,
             });
         } finally {
@@ -77,7 +106,12 @@ const VisitorForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+        <form
+            key={scheduledVisitor?.id ?? "new"}
+            onSubmit={handleSubmit}
+            noValidate
+            className="bg-white shadow-sm border border-gray-200 rounded-lg p-6"
+        >
             {scheduledVisitor && (
                 <Alert status="info" mb="6" rounded="md">
                     <AlertIcon />
@@ -95,13 +129,14 @@ const VisitorForm = () => {
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Dados Pessoais</h2>
                 </div>
                 <div className="md:col-span-2">
-                    <label htmlFor="completeName" className="block text-sm font-medium text-gray-700">Nome Completo</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome Completo</label>
                     <input
                         type="text"
-                        name="completeName"
-                        id="completeName"
+                        name="name"
+                        id="name"
+                        maxLength={150}
                         defaultValue={scheduledVisitor?.name}
-                        className="capitalize mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
+                        className={`capitalize ${inputClass}`}
                         required
                     />
                 </div>
@@ -111,8 +146,9 @@ const VisitorForm = () => {
                         mask="999.999.999-99"
                         name="idNumber"
                         id="idNumber"
+                        inputMode="numeric"
                         defaultValue={scheduledVisitor?.idNumber}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
+                        className={inputClass}
                         required
                     />
                 </div>
@@ -122,46 +158,59 @@ const VisitorForm = () => {
                         mask="(99) 99999-9999"
                         name="phoneNumber"
                         id="phoneNumber"
+                        inputMode="numeric"
                         defaultValue={scheduledVisitor?.phoneNumber}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
+                        className={inputClass}
                         required
                     />
                 </div>
 
                 {/* Dados do Veículo */}
-                <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6">
-                    <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Dados do Veículo</h2>
+                <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6 flex items-center justify-between border-b pb-2 mb-4">
+                    <h2 className="text-lg font-semibold text-gray-800">Dados do Veículo</h2>
+                    <Checkbox
+                        isChecked={onFoot}
+                        onChange={(event) => setOnFoot(event.target.checked)}
+                        colorScheme="red"
+                        size="lg"
+                    >
+                        A pé (sem veículo)
+                    </Checkbox>
                 </div>
-                <div>
-                    <label htmlFor="carModel" className="block text-sm font-medium text-gray-700">Modelo</label>
-                    <input
-                        type="text"
-                        name="carModel"
-                        id="carModel"
-                        defaultValue={scheduledVisitor?.carModel}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="licensePlate" className="block text-sm font-medium text-gray-700">Placa</label>
-                    <input
-                        type="text"
-                        name="licensePlate"
-                        id="licensePlate"
-                        defaultValue={scheduledVisitor?.licensePlate}
-                        className="uppercase mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="color" className="block text-sm font-medium text-gray-700">Cor</label>
-                    <input
-                        type="text"
-                        name="color"
-                        id="color"
-                        defaultValue={scheduledVisitor?.color}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
-                    />
-                </div>
+                {onFoot ? (
+                    <p className="col-span-1 md:col-span-2 lg:col-span-4 text-sm text-gray-500">
+                        Visitante a pé: os dados do veículo não serão registrados.
+                    </p>
+                ) : (
+                    <>
+                        <div>
+                            <label htmlFor="carModel" className="block text-sm font-medium text-gray-700">Modelo</label>
+                            <input
+                                type="text"
+                                name="carModel"
+                                id="carModel"
+                                maxLength={50}
+                                defaultValue={scheduledVisitor?.carModel}
+                                className={inputClass}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="licensePlate" className="block text-sm font-medium text-gray-700">Placa</label>
+                            <input
+                                type="text"
+                                name="licensePlate"
+                                id="licensePlate"
+                                maxLength={8}
+                                placeholder="ABC1D23"
+                                defaultValue={scheduledVisitor?.licensePlate}
+                                className={`uppercase ${inputClass}`}
+                                required
+                            />
+                        </div>
+                        <ColorSelect defaultValue={scheduledVisitor?.color} required />
+                    </>
+                )}
 
                 {/* Dados do Destino */}
                 <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6">
@@ -173,23 +222,25 @@ const VisitorForm = () => {
                         type="text"
                         name="contactPerson"
                         id="contactPerson"
+                        maxLength={100}
                         defaultValue={scheduledVisitor?.contactPerson}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
+                        className={inputClass}
                         required
                     />
                 </div>
                 <div className="md:col-span-2">
-                    <label htmlFor="section" className="block text-sm font-medium text-gray-700">Seção de Destino</label>
+                    <label htmlFor="target" className="block text-sm font-medium text-gray-700">Seção de Destino</label>
                     <select
-                        name="section"
-                        id="section"
+                        key={loadingDestinations ? "loading" : "ready"}
+                        name="target"
+                        id="target"
                         defaultValue={scheduledVisitor?.target}
                         disabled={loadingDestinations}
                         className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100"
                         required
                     >
                         <option value="">
-                            {loadingDestinations ? 'Carregando...' : 'Selecione...'}
+                            {loadingDestinations ? "Carregando..." : "Selecione..."}
                         </option>
                         {destinations.map((dest) => (
                             <option key={dest} value={dest}>
@@ -202,7 +253,7 @@ const VisitorForm = () => {
                 {/* Captura de Imagem */}
                 <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6">
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Foto do Visitante</h2>
-                    <ImageCapture onImageCapture={handleImageCapture} />
+                    <ImageCapture onImageCapture={setImageBase64} />
                 </div>
             </div>
 

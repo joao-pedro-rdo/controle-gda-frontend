@@ -1,6 +1,7 @@
 import { Tr, Td, Button, Tooltip } from "@chakra-ui/react";
 import QRCode from "qrcode";
 import { useState } from "react";
+import { formatCpf } from "../../../utils/validation";
 
 const VehicleTableRow = ({ vehicle, onDelete, mobile }) => {
     const [qrCode, setQrCode] = useState(null);
@@ -48,7 +49,7 @@ const VehicleTableRow = ({ vehicle, onDelete, mobile }) => {
                 <p className="text-sm"><strong>Placa:</strong> {vehicle.licensePlate}</p>
                 <p className="text-sm"><strong>Cor:</strong> {vehicle.color}</p>
                 <p className="text-sm"><strong>Habilitação:</strong> {vehicle.driverLicense}</p>
-                <p className="text-sm"><strong>Idt:</strong> {vehicle.idNumber}</p>
+                <p className="text-sm"><strong>CPF:</strong> {formatCpf(vehicle.idNumber)}</p>
                 <p className="text-sm"><strong>Esqd:</strong> {vehicle.company}</p>
                 <p className="text-sm"><strong>Seção:</strong> {vehicle.section}</p>
                 <div className="flex justify-end space-x-2 pt-2 border-t">
@@ -78,7 +79,7 @@ const VehicleTableRow = ({ vehicle, onDelete, mobile }) => {
             <Td>{vehicle.licensePlate}</Td>
             <Td>{vehicle.color}</Td>
             <Td>{vehicle.driverLicense}</Td>
-            <Td>{vehicle.idNumber}</Td>
+            <Td>{formatCpf(vehicle.idNumber)}</Td>
             <Td>{vehicle.company}</Td>
             <Td>{vehicle.section}</Td>
             <Td>

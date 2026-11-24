@@ -41,7 +41,7 @@ const VehiclesTable = ({ vehicles, onDelete }) => {
                             <Th>Placa</Th>
                             <Th>Cor</Th>
                             <Th>Habilitação</Th>
-                            <Th>Idt</Th>
+                            <Th>CPF</Th>
                             <Th>Esqd</Th>
                             <Th>Seção</Th>
                             <Th>Ações</Th>
