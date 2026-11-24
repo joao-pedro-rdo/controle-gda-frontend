@@ -64,8 +64,13 @@ const VisitorForm = () => {
                     color: keep("color", visitor.color),
                 }),
             });
+            // Última visita a pé: marca "A pé", salvo se a Guarda já começou a
+            // preencher o veículo. Pode ser desmarcado se agora veio de carro.
+            const typedVehicle = ["carModel", "licensePlate", "color"].some((name) => fieldValue(name));
+            const markOnFoot = !visitor.licensePlate && !onFoot && !typedVehicle;
+            if (markOnFoot) setOnFoot(true);
             setPrefillKey((key) => key + 1);
-            setLookup({ status: "found", lastVisit: visitor.lastVisit });
+            setLookup({ status: "found", lastVisit: visitor.lastVisit, onFoot: markOnFoot });
         } catch {
             // Falha na busca não impede o cadastro manual.
             setLookup({ status: "idle" });
@@ -189,7 +194,8 @@ const VisitorForm = () => {
                     )}
                     {lookup.status === "found" && (
                         <p className="mt-1 text-xs text-green-700">
-                            Dados da última visita ({new Date(lookup.lastVisit).toLocaleDateString("pt-BR")}) preenchidos. Confira antes de salvar.
+                            Dados da última visita ({new Date(lookup.lastVisit).toLocaleDateString("pt-BR")}) preenchidos
+                            {lookup.onFoot && ", que foi a pé"}. Confira antes de salvar.
                         </p>
                     )}
                     {lookup.status === "notfound" && (
