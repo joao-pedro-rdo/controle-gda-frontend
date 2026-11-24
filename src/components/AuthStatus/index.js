@@ -14,7 +14,7 @@ const AuthStatus = () => {
       Bem vindo {auth.user.login}!
       <button
         onClick={() => {
-          auth.logout(() => navigate("/"));
+          auth.logout(() => navigate("/login", { replace: true }));
         }}
       >
         Sair

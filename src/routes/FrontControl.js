@@ -10,7 +10,6 @@ import QRCodeInput from "../components/QRCodeInput";
 import PermissionarioPopup from "../components/FrontControl/AddPermissionario";
 import LoadingComponent from "../components/FrontControl/LoadingComponent";
 import AuthorizedUserModal from "../components/FrontControl/AuthorizedUserModal";
-import MissionForm from "../components/FrontControl/MissionForm";
 import ScannerModeToggle from "../components/FrontControl/ScannerModeToggle";
 import { useEffect } from "react";
 
@@ -46,8 +45,6 @@ const FrontControl = () => {
   // Hook para gerenciar a lógica de controle
   const {
     authorized,
-    mission,
-    setMission,
     isLoading,
     loadingMessage,
     hasApiResponse,
@@ -55,7 +52,7 @@ const FrontControl = () => {
 
   // Abrir modal quando autorizado
   useEffect(() => {
-    if (authorized && !mission) {
+    if (authorized) {
       onAuthorizedModalOpen();
       
       // Fechar automaticamente após 5 segundos e resetar
@@ -66,7 +63,7 @@ const FrontControl = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [authorized, mission]);
+  }, [authorized]);
 
   const handlePermissionarioSelect = (permissionario) => {
     setScanResult(permissionario);
@@ -127,7 +124,7 @@ const FrontControl = () => {
         {/* Conteúdo principal */}
         {isLoading ? (
           <LoadingComponent message={loadingMessage} />
-        ) : scanResult && !authorized && !mission ? (
+        ) : scanResult && !authorized ? (
           <div className="w-full max-w-2xl">
             <p className="text-xl md:text-2xl text-center font-bold text-red-600 p-5">
               QR Code inválido!
@@ -152,8 +149,6 @@ const FrontControl = () => {
               </Button>
             </div>
           </div>
-        ) : mission ? (
-          <MissionForm mission={mission} setMission={setMission} />
         ) : (
           <div className="flex flex-col items-center w-full">
             <p className="text-lg md:text-2xl mb-6 text-center px-4">

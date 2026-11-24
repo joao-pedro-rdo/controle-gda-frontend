@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import client from "../services/client";
 
 // ✅ CORRIGIR: Exportar como named export
@@ -30,15 +31,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   // 🔒 NOVA IMPLEMENTAÇÃO: Logout via API
-  const logout = async () => {
+  // onDone: callback opcional executado após limpar a sessão (ex.: redirecionar)
+  const logout = async (onDone) => {
     try {
       await client.post("/logout");
-      console.log("Logout realizado com sucesso");
     } catch (error) {
       console.error("Erro no logout:", error);
     } finally {
       setUser(null);
       setIsAuthenticated(false);
+      if (typeof onDone === "function") onDone();
     }
   };
 
@@ -92,6 +94,7 @@ export const useAuth = () => {
 // Componente RequireAuth CORRIGIDO
 export const RequireAuth = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
 
   // Mostrar loading enquanto verifica autenticação
   if (isLoading) {
@@ -110,10 +113,9 @@ export const RequireAuth = ({ children }) => {
     );
   }
 
-  // Se não autenticado, mostrar tela de login
+  // Se não autenticado, redirecionar para /login lembrando a rota de origem
   if (!isAuthenticated) {
-    const Login = require("../components/Login").default;
-    return <Login />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   // Se autenticado, mostrar o conteúdo

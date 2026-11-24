@@ -34,6 +34,7 @@ import {
 import styled from "styled-components";
 import MilitaryPopup from "./MilitaryPopup";
 import { NavButtons } from "./navButtons";
+import { branding } from "../../config/branding";
 
 const Navbar = () => {
   const auth = useAuth();
@@ -45,7 +46,7 @@ const Navbar = () => {
   } = useDisclosure();
 
   const handleLogout = () => {
-    auth.logout(() => navigate("/"));
+    auth.logout(() => navigate("/login", { replace: true }));
   };
 
   const [isMd] = useMediaQuery("(min-width: 800px)");
@@ -58,7 +59,7 @@ const Navbar = () => {
         style={{ backgroundColor: "aliceblue" }}
       >
         <article className="flex w-60 gap-1 items-center">
-          <img src="/img/logo.png" alt="logo" width="50px" height="40px" />
+          <img src={branding.logo} alt="logo" width="50px" height="40px" />
           <Text fontSize="sm">
             Bem vindo - Perfil: <strong>{auth.user.role}</strong>
           </Text>

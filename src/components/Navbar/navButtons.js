@@ -23,11 +23,11 @@ import {
 } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
-import { useColors } from "../../hooks/useColors";
+import { useBranding } from "../../config/branding";
 import { useMediaQuery } from "@chakra-ui/react";
 
 export const NavButtons = ({ auth, handleLogout, onMilitaryOpen }) => {
-  const { primaryColor, secondaryColor } = useColors();
+  const { primaryColor } = useBranding();
   const [isMobile] = useMediaQuery("(max-width: 800px)");
   
   // Converter hex para nome de cor ou usar customizado
@@ -184,41 +184,8 @@ export const NavButtons = ({ auth, handleLogout, onMilitaryOpen }) => {
         </Menu>
       )}
 
-      {/* Menu de Operações STA */}
-      {auth.user.role === "Sta" && (
-        <Menu>
-          <MenuButton
-            as={Button}
-            rightIcon={<Icon as={FaChevronDown} boxSize={iconSize} />}
-            variant="outline"
-            colorScheme={colorScheme}
-            size={buttonSize}
-            leftIcon={<Icon as={FaClipboardList} boxSize={iconSize} />}
-            width={buttonWidth}
-          >
-            Operações
-          </MenuButton>
-          <MenuList>
-            <MenuItem as={Link} to="/motoristas">
-              <Icon as={FaUsers} mr={2} boxSize="16px" />
-              Motoristas
-            </MenuItem>
-            <MenuItem as={Link} to="/viaturas">
-              <Icon as={FaCar} mr={2} boxSize="16px" />
-              Viaturas
-            </MenuItem>
-            <MenuItem as={Link} to="/missoes">
-              <Icon as={FaClipboardList} mr={2} boxSize="16px" />
-              Missões
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      )}
-
       {/* Menu de Relatórios */}
-      {(auth.user.role === "S2" ||
-        auth.user.role === "Scmt" ||
-        auth.user.role === "Ofdia") && (
+      {(auth.user.role === "S2" || auth.user.role === "Scmt") && (
         <Menu>
           <MenuButton
             as={Button}

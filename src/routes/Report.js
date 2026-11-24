@@ -73,8 +73,7 @@ const Report = () => {
   };
 
   // Verificar permissão do usuário
-  const hasAccess =
-    auth.user.role === "S2" || auth.user.role === "Scmt" || auth.user.role === "Ofdia";
+  const hasAccess = auth.user.role === "S2" || auth.user.role === "Scmt";
   const canExport = auth.user.role === "Scmt" || auth.user.role === "S2";
 
   if (!hasAccess) return <Unauthorized />;

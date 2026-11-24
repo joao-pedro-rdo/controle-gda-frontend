@@ -64,7 +64,8 @@ const VehicleForm = () => {
 
     return (
         <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-            <form onSubmit={handleSubmit}>
+            {/* key remonta o form quando os dados chegam: o InputMask ignora mudanças em defaultValue */}
+            <form key={toEdit.id ?? "new"} onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormSection title="Dados Pessoais">
                         <InputField

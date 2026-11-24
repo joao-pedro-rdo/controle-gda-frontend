@@ -1,15 +1,16 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { FormEvent, useState } from "react";
-import { useAppImages } from "../../hooks/useAppImages";
-import { useColors } from "../../hooks/useColors";
+import { DEFAULT_LOGO, useBranding } from "../../config/branding";
 
 const Login: React.FC = () => {
   const auth = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from: string =
+    (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || "/";
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { logo, background, loading: loadingImages } = useAppImages();
-  const { primaryColor, secondaryColor } = useColors();
+  const { logo, background, primaryColor, secondaryColor } = useBranding();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,10 +26,7 @@ const Login: React.FC = () => {
       const result = await auth.login(data);
 
       if (result.success) {
-        console.log("Login bem-sucedido, redirecionando...");
-        setTimeout(() => {
-          navigate("/");
-        }, 100);
+        navigate(from === "/login" ? "/" : from, { replace: true });
       } else {
         console.log("Login falhou:", result.message);
       }
@@ -38,17 +36,6 @@ const Login: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  if (loadingImages) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div 
@@ -69,7 +56,9 @@ const Login: React.FC = () => {
               alt="Logo do Sistema"
               className="max-w-full max-h-full object-contain"
               onError={(e) => {
-                e.currentTarget.src = '/img/logo.png'; // Fallback
+                if (!e.currentTarget.src.endsWith(DEFAULT_LOGO)) {
+                  e.currentTarget.src = DEFAULT_LOGO; // Fallback
+                }
               }}
             />
           </div>

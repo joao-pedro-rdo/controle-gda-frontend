@@ -58,12 +58,8 @@ export const useQRScanner = () => {
       return;
     }
 
-    // QR codes menores (veículos e permissionários)
-    if (
-      currentValue.length > 20 &&
-      currentValue.length < 40 &&
-      currentValue[currentValue.length - 1] === '}'
-    ) {
+    // QR codes de veículos e permissionários (JSON)
+    if (currentValue.length > 20 && currentValue[currentValue.length - 1] === '}') {
       try {
         const parsedData = JSON.parse(currentValue);
         console.log('Dados do QR code parseados:', parsedData);
@@ -79,25 +75,6 @@ export const useQRScanner = () => {
         inputRef.current.value = null;
       } catch (error) {
         console.error('Erro ao processar QR code:', error);
-        toast({
-          title: 'Código QR inválido',
-          description: 'Se possível, encaminhar para S2 urgentemente',
-          status: 'error',
-          duration: 9000,
-          isClosable: true,
-        });
-        setMessage('Atualize a página para usar o leitor');
-        inputRef.current.value = null;
-      }
-    }
-
-    // QR codes maiores (missões)
-    if (currentValue.length > 30 && currentValue[currentValue.length - 1] === '}') {
-      try {
-        const mission = JSON.parse(currentValue);
-        setScanResult(mission);
-        inputRef.current.value = null;
-      } catch (error) {
         toast({
           title: 'Código QR inválido',
           description: 'Se possível, encaminhar para S2 urgentemente',

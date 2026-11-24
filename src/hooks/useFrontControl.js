@@ -5,7 +5,6 @@ import { useEntryRegistration } from './useEntryRegistration';
 
 export const useFrontControl = (scanResult, setIsProcessing) => {
   const [authorized, setAuthorized] = useState(null);
-  const [mission, setMission] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [hasApiResponse, setHasApiResponse] = useState(false);
@@ -94,23 +93,6 @@ export const useFrontControl = (scanResult, setIsProcessing) => {
           setLoadingMessage('');
         }
       }
-      // QR de missão
-      else if (scanResult?.mission) {
-        setIsLoading(true);
-        setLoadingMessage('Carregando missão...');
-
-        try {
-          const response = await client.get(`/missions/${scanResult.mission}`);
-          setMission(response.data);
-          setHasApiResponse(true);
-        } catch (error) {
-          console.error('Erro ao buscar missão:', error);
-          setHasApiResponse(true);
-        } finally {
-          setIsLoading(false);
-          setLoadingMessage('');
-        }
-      }
     };
 
     processQRCode();
@@ -118,8 +100,6 @@ export const useFrontControl = (scanResult, setIsProcessing) => {
 
   return {
     authorized,
-    mission,
-    setMission,
     isLoading,
     loadingMessage,
     hasApiResponse,

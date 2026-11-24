@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Login from "./components/Login";
 import { AuthProvider, RequireAuth } from "./context/AuthContext";
 import { Routes, Route } from "react-router-dom";
@@ -10,10 +9,6 @@ import Visitors from "./routes/Visitors";
 import ListVehicles from "./routes/ListVehicles";
 import Report from "./routes/Report";
 import Users from "./routes/Users";
-import Drivers from "./routes/Drivers";
-import Viaturas from "./routes/Viaturas";
-import Missions from "./routes/Missions";
-import MissionsReport from "./routes/MissionsReport";
 import ChangePassword from "./routes/ChangePassword";
 import Permissionarios from "./routes/Permissionarios";
 import ListPermissionarios from "./routes/ListPermissionarios";
@@ -23,27 +18,6 @@ import { PessoasNaoAutorizadas } from "./routes/PessoasNaoAutorizadas";
 import Settings from "./routes/Settings";
 
 const App = () => {
-  useEffect(() => {
-    // Aplicar título e favicon salvos ao carregar a aplicação
-    const savedTitle = localStorage.getItem('systemPageTitle');
-    const savedLogo = localStorage.getItem('systemLogo');
-    
-    if (savedTitle) {
-      document.title = savedTitle;
-    }
-    
-    if (savedLogo) {
-      // Atualizar favicon
-      const existingFavicons = document.querySelectorAll('link[rel*="icon"]');
-      existingFavicons.forEach(icon => icon.remove());
-      
-      const link = document.createElement('link');
-      link.rel = 'shortcut icon';
-      link.type = 'image/x-icon';
-      link.href = savedLogo;
-      document.head.appendChild(link);
-    }
-  }, []);
   return (
     <ChakraProvider>
       <AuthProvider>
@@ -126,42 +100,6 @@ const App = () => {
             element={
               <RequireAuth>
                 <Users />
-              </RequireAuth>
-            }
-          />
-          {/* STA - OK */}
-          <Route
-            path="/motoristas"
-            element={
-              <RequireAuth>
-                <Drivers />
-              </RequireAuth>
-            }
-          />
-          {/* STA - OK */}
-          <Route
-            path="/viaturas"
-            element={
-              <RequireAuth>
-                <Viaturas />
-              </RequireAuth>
-            }
-          />
-          {/* STA - OK */}
-          <Route
-            path="/missoes"
-            element={
-              <RequireAuth>
-                <Missions />
-              </RequireAuth>
-            }
-          />
-          {/* STA - FISCAL - SCMT - OK */}
-          <Route
-            path="/arquivo"
-            element={
-              <RequireAuth>
-                <MissionsReport />
               </RequireAuth>
             }
           />

@@ -30,3 +30,10 @@ EXPOSE 3000
 
 # Configurar nginx para ouvir na porta 3000
 COPY nginx-front.conf /etc/nginx/conf.d/default.conf
+
+# Identidade visual: gera /config.js a partir do .env na subida do container.
+# A pasta branding do host é montada em /usr/share/nginx/html/branding.
+COPY docker/40-app-config.sh /docker-entrypoint.d/40-app-config.sh
+RUN sed -i 's/\r$//' /docker-entrypoint.d/40-app-config.sh \
+    && chmod +x /docker-entrypoint.d/40-app-config.sh \
+    && mkdir -p /usr/share/nginx/html/branding

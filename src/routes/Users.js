@@ -74,12 +74,8 @@ const Users = () => {
                 <Select name="role">
                   <option value="S2">S2</option>
                   <option value="Guarda">Guarda</option>
-                  <option value="RP">RP</option>
-                  <option value="Sta">Sta</option>
                   <option value="SFPC">SFPC</option>
-                  <option value="Ofdia">Oficial de Dia</option>
                   <option value="Scmt">Sub-Comandante</option>
-                  <option value="Fiscal">Fiscal Adm</option>
                 </Select>
               </label>
 

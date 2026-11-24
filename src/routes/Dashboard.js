@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import styled from "styled-components";
 import VisitorImage from "../components/VisitorImage";
-import DashboardSta from "../components/DashboardSta";
+import { branding } from "../config/branding";
 import { Badge } from "@chakra-ui/react";
 import { MdCalendarToday } from "react-icons/md";
 
@@ -81,13 +81,9 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <Bg />
+      <Bg $src={branding.background} />
 
-      {auth.user.role === "Scmt" ||
-      auth.user.role === "RP" ||
-      auth.user.role === "Ofdia" ||
-      auth.user.role === "S2" ||
-      auth.user.role === "Guarda" ? (
+      {["Guarda", "S2", "Scmt", "SFPC"].includes(auth.user.role) ? (
         <Wrapper>
           {entries &&
             entries.map((el) => {
@@ -190,8 +186,6 @@ const Dashboard = () => {
               ) : null;
             })}
         </Wrapper>
-      ) : auth.user.role === "Sta" || auth.user.role === "Fiscal" ? (
-        <DashboardSta />
       ) : (
         <Text>Perfil não definido ainda</Text>
       )}
@@ -218,9 +212,9 @@ const Wrapper = styled.div`
   border-radius: 20px;
 `;
 
-const Bg = styled.img`
+const Bg = styled.div`
   @media (min-width: 700px) {
-    background-image: url("img/bg-cover.jpg");
+    background-image: url(${(props) => props.$src});
     background-repeat: no-repeat;
     background-size: cover;
     height: 100vh;
