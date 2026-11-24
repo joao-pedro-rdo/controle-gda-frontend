@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import client from "../../../services/client";
 import InputMask from "react-input-mask";
 import { Button, Checkbox, useToast, Alert, AlertIcon, Box } from "@chakra-ui/react";
 import ImageCapture from "./ImageCapture";
 import ColorSelect from "../Form/ColorSelect";
 import { useDestinations } from "../../../hooks/useDestinations";
-import { apiErrorMessage, validateFields } from "../../../utils/validation";
+import { apiErrorMessage, digitsOnly, isValidCpf, validateFields } from "../../../utils/validation";
 
 const inputClass =
     "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500";
@@ -22,6 +22,13 @@ const VisitorForm = () => {
     const [imageBase64, setImageBase64] = useState(null);
     const [onFoot, setOnFoot] = useState(false);
 
+    // Autopreenchimento pela última visita com o mesmo CPF.
+    const formRef = useRef(null);
+    const lastLookupRef = useRef("");
+    const [prefill, setPrefill] = useState({});
+    const [prefillKey, setPrefillKey] = useState(0);
+    const [lookup, setLookup] = useState({ status: "idle" });
+
     useEffect(() => {
         const visitor = location.state?.scheduledVisitor;
         if (visitor) {
@@ -29,6 +36,41 @@ const VisitorForm = () => {
             setOnFoot(!visitor.licensePlate);
         }
     }, [location.state]);
+
+    const fieldValue = (name) => formRef.current?.elements.namedItem(name)?.value?.trim() ?? "";
+
+    // Ao completar um CPF válido, busca a visita mais recente e preenche só
+    // os campos ainda vazios. Tudo continua editável; a foto é sempre nova.
+    const handleCpfChange = async (event) => {
+        const cpf = digitsOnly(event.target.value);
+        if (scheduledVisitor || cpf.length !== 11 || !isValidCpf(cpf) || cpf === lastLookupRef.current) return;
+        lastLookupRef.current = cpf;
+        setLookup({ status: "loading" });
+        try {
+            const { data } = await client.get(`/entries/visitor-lookup/${cpf}`);
+            const visitor = data.visitor;
+            if (!visitor || lastLookupRef.current !== cpf) {
+                setLookup({ status: visitor ? "idle" : "notfound" });
+                return;
+            }
+            const keep = (name, value) => fieldValue(name) || value || "";
+            const withVehicle = !onFoot && Boolean(visitor.licensePlate);
+            setPrefill({
+                name: keep("name", visitor.name),
+                phoneNumber: keep("phoneNumber", visitor.phoneNumber),
+                ...(withVehicle && {
+                    carModel: keep("carModel", visitor.carModel),
+                    licensePlate: keep("licensePlate", visitor.licensePlate),
+                    color: keep("color", visitor.color),
+                }),
+            });
+            setPrefillKey((key) => key + 1);
+            setLookup({ status: "found", lastVisit: visitor.lastVisit });
+        } catch {
+            // Falha na busca não impede o cadastro manual.
+            setLookup({ status: "idle" });
+        }
+    };
 
     const showError = (description) =>
         toast({ title: "Verifique os dados", description, status: "error", duration: 6000, isClosable: true });
@@ -107,6 +149,7 @@ const VisitorForm = () => {
 
     return (
         <form
+            ref={formRef}
             key={scheduledVisitor?.id ?? "new"}
             onSubmit={handleSubmit}
             noValidate
@@ -128,18 +171,6 @@ const VisitorForm = () => {
                 <div className="col-span-1 md:col-span-2 lg:col-span-4">
                     <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Dados Pessoais</h2>
                 </div>
-                <div className="md:col-span-2">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome Completo</label>
-                    <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        maxLength={150}
-                        defaultValue={scheduledVisitor?.name}
-                        className={`capitalize ${inputClass}`}
-                        required
-                    />
-                </div>
                 <div>
                     <label htmlFor="idNumber" className="block text-sm font-medium text-gray-700">CPF</label>
                     <InputMask
@@ -148,18 +179,45 @@ const VisitorForm = () => {
                         id="idNumber"
                         inputMode="numeric"
                         defaultValue={scheduledVisitor?.idNumber}
+                        onChange={handleCpfChange}
                         className={inputClass}
+                        autoFocus={!scheduledVisitor}
+                        required
+                    />
+                    {lookup.status === "loading" && (
+                        <p className="mt-1 text-xs text-gray-500">Buscando visitas anteriores...</p>
+                    )}
+                    {lookup.status === "found" && (
+                        <p className="mt-1 text-xs text-green-700">
+                            Dados da última visita ({new Date(lookup.lastVisit).toLocaleDateString("pt-BR")}) preenchidos. Confira antes de salvar.
+                        </p>
+                    )}
+                    {lookup.status === "notfound" && (
+                        <p className="mt-1 text-xs text-gray-500">Primeira visita deste CPF.</p>
+                    )}
+                </div>
+                <div className="md:col-span-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome Completo</label>
+                    <input
+                        type="text"
+                        key={`name-${prefillKey}`}
+                        name="name"
+                        id="name"
+                        maxLength={150}
+                        defaultValue={prefill.name ?? scheduledVisitor?.name}
+                        className={`capitalize ${inputClass}`}
                         required
                     />
                 </div>
                 <div>
                     <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Telefone</label>
                     <InputMask
+                        key={`phone-${prefillKey}`}
                         mask="(99) 99999-9999"
                         name="phoneNumber"
                         id="phoneNumber"
                         inputMode="numeric"
-                        defaultValue={scheduledVisitor?.phoneNumber}
+                        defaultValue={prefill.phoneNumber ?? scheduledVisitor?.phoneNumber}
                         className={inputClass}
                         required
                     />
@@ -187,10 +245,11 @@ const VisitorForm = () => {
                             <label htmlFor="carModel" className="block text-sm font-medium text-gray-700">Modelo</label>
                             <input
                                 type="text"
+                                key={`model-${prefillKey}`}
                                 name="carModel"
                                 id="carModel"
                                 maxLength={50}
-                                defaultValue={scheduledVisitor?.carModel}
+                                defaultValue={prefill.carModel ?? scheduledVisitor?.carModel}
                                 className={inputClass}
                                 required
                             />
@@ -202,13 +261,18 @@ const VisitorForm = () => {
                                 name="licensePlate"
                                 id="licensePlate"
                                 maxLength={8}
+                                key={`plate-${prefillKey}`}
                                 placeholder="ABC1D23"
-                                defaultValue={scheduledVisitor?.licensePlate}
+                                defaultValue={prefill.licensePlate ?? scheduledVisitor?.licensePlate}
                                 className={`uppercase ${inputClass}`}
                                 required
                             />
                         </div>
-                        <ColorSelect defaultValue={scheduledVisitor?.color} required />
+                        <ColorSelect
+                            key={`color-${prefillKey}`}
+                            defaultValue={prefill.color ?? scheduledVisitor?.color}
+                            required
+                        />
                     </>
                 )}
 
