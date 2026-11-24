@@ -62,6 +62,7 @@ const Navbar = () => {
           <img src={branding.logo} alt="logo" width="50px" height="40px" />
           <Text fontSize="sm">
             Bem vindo - Perfil: <strong>{auth.user.role}</strong>
+            {auth.user.station && " (posto da Guarda)"}
           </Text>
         </article>
 

@@ -283,7 +283,7 @@ export const NavButtons = ({ auth, handleLogout, onMilitaryOpen }) => {
         leftIcon={<Icon as={FaSignOutAlt} boxSize={iconSize} />}
         width={buttonWidth}
       >
-        Sair
+        {auth.user.station ? "Entrar com usuário" : "Sair"}
       </Button>
 
       {/* Botão para Militares na OM - apenas Guarda */}
