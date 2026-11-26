@@ -7,7 +7,8 @@ const ReportTableRow = ({ entry, mobile = false }) => {
   const formattedTime = format(new Date(entry.time), 'HH:mm:ss');
   const formattedDate = format(new Date(entry.time), 'dd/MM/yyyy');
   const userType = getUserType(entry);
-  const idNumber = entry.isVisitor ? formatCpf(entry.idNumber) : entry.idNumber;
+  // Documento é o CPF; valores antigos fora do formato aparecem como estão.
+  const idNumber = formatCpf(entry.idNumber);
   // Visitante sem placa registrada entrou a pé.
   const plate = entry.licensePlate || (entry.isVisitor ? 'A pé' : '');
 

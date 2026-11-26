@@ -169,7 +169,7 @@ const ReportFilters = ({
               </label>
               <input
                 type="text"
-                placeholder="Nome, placa, CPF, identidade..."
+                placeholder="Nome, placa, CPF..."
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-sm"
               />

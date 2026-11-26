@@ -29,6 +29,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import client from "../../services/client";
 import VisitorImage from "../VisitorImage";
+import { formatCpf } from "../../utils/validation";
 
 const MilitaryPopup = ({ isOpen, onClose }) => {
   const [militaryEntries, setMilitaryEntries] = useState([]);
@@ -281,7 +282,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
                       <Tr>
                         <Th>Foto</Th>
                         <Th>Nome</Th>
-                        <Th>Identidade</Th>
+                        <Th>CPF</Th>
                         <Th>Veículo</Th>
                         <Th>Placa</Th>
                         <Th>Entrada</Th>
@@ -300,7 +301,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
                             />
                           </Td>
                           <Td fontWeight="semibold">{entry.name}</Td>
-                          <Td>{entry.idNumber}</Td>
+                          <Td>{formatCpf(entry.idNumber)}</Td>
                           <Td>
                             {entry.carModel} - {entry.color}
                           </Td>
@@ -324,7 +325,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
                       <Tr>
                         <Th>Foto</Th>
                         <Th>Nome</Th>
-                        <Th>Identidade</Th>
+                        <Th>CPF</Th>
                         <Th>Veículo</Th>
                         <Th>Placa</Th>
                         <Th>Saída</Th>
@@ -343,7 +344,7 @@ const MilitaryPopup = ({ isOpen, onClose }) => {
                             />
                           </Td>
                           <Td fontWeight="semibold">{entry.name}</Td>
-                          <Td>{entry.idNumber}</Td>
+                          <Td>{formatCpf(entry.idNumber)}</Td>
                           <Td>
                             {entry.carModel} - {entry.color}
                           </Td>

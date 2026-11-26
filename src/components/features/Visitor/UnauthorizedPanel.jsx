@@ -40,8 +40,7 @@ const UnauthorizedPanel = () => {
                 const nomeMatch = pessoa.nome?.toLowerCase().includes(searchLower);
                 const cpfNumbers = pessoa.CPF?.replace(/\D/g, "");
                 const cpfMatch = searchNumbers && cpfNumbers && cpfNumbers.includes(searchNumbers);
-                const identidadeMatch = pessoa.identidade?.toLowerCase().includes(searchLower);
-                return nomeMatch || cpfMatch || identidadeMatch;
+                return nomeMatch || cpfMatch;
             });
             setFilteredPessoas(filtered);
         }
@@ -118,7 +117,6 @@ const UnauthorizedPanel = () => {
                                     <div className="flex-1 space-y-1">
                                         <p className="text-xs font-bold text-red-700">{pessoa.nome}</p>
                                         <p className="text-xs text-gray-600">CPF: {pessoa.CPF}</p>
-                                        {pessoa.identidade && <p className="text-xs text-gray-600">ID: {pessoa.identidade}</p>}
                                         {pessoa.observacao && <p className="text-xs text-red-600 italic">{pessoa.observacao}</p>}
                                     </div>
                                 </div>

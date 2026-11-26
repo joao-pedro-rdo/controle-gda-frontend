@@ -23,7 +23,7 @@ export const useReportExport = () => {
           columns: [
             { label: 'Dia', value: 'day' },
             { label: 'Nome', value: 'name' },
-            { label: 'Identidade', value: 'idNumber' },
+            { label: 'CPF', value: 'idNumber' },
             { label: 'Telefone', value: 'phoneNumber' },
             { label: 'Carro - Cor', value: 'car' },
             { label: 'Placa', value: 'licensePlate' },
@@ -39,7 +39,7 @@ export const useReportExport = () => {
           columns: [
             { label: 'Dia', value: 'day' },
             { label: 'Militar', value: 'name' },
-            { label: 'Identidade', value: 'idNumber' },
+            { label: 'CPF', value: 'idNumber' },
             { label: 'Carro - Cor', value: 'car' },
             { label: 'Placa', value: 'licensePlate' },
             { label: 'Entrada/Saída', value: 'type' },
@@ -52,8 +52,7 @@ export const useReportExport = () => {
           columns: [
             { label: 'Dia', value: 'day' },
             { label: 'Nome', value: 'name' },
-            { label: 'Identidade', value: 'idNumber' },
-            { label: 'CPF', value: 'CPF' },
+            { label: 'CPF', value: 'idNumber' },
             { label: 'Veículo', value: 'carModel' },
             { label: 'Placa', value: 'licensePlate' },
             { label: 'Cor', value: 'color' },

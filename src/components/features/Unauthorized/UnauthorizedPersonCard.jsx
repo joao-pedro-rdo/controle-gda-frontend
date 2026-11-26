@@ -47,11 +47,6 @@ const UnauthorizedPersonCard = ({ person, onEdit, onDelete, canEdit }) => {
                     <p className="text-sm text-gray-600">
                         <strong>CPF:</strong> {formatCPF(person.CPF)}
                     </p>
-                    {person.identidade && (
-                        <p className="text-sm text-gray-600">
-                            <strong>Identidade:</strong> {person.identidade}
-                        </p>
-                    )}
                     {person.observacao && (
                         <p className="text-sm text-gray-700 mt-2">
                             <strong>Observação:</strong> {person.observacao}

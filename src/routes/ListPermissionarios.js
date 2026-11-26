@@ -18,6 +18,7 @@ import Navbar from "../components/Navbar";
 import Unauthorized from "../components/Unauthorized";
 import AuthenticatedImage from "../components/AuthenticatedImage";
 import { useAuth } from "../context/AuthContext";
+import { formatCpf } from "../utils/validation";
 
 const ListPermissionarios = () => {
   const auth = useAuth();
@@ -125,7 +126,6 @@ const ListPermissionarios = () => {
             <Tr>
               <Th textAlign="center">Foto</Th>
               <Th textAlign="center">Nome Completo</Th>
-              <Th textAlign="center">Identidade</Th>
               <Th textAlign="center">CPF</Th>
               <Th textAlign="center">Local</Th>
               <Th textAlign="center">Veículo</Th>
@@ -163,8 +163,7 @@ const ListPermissionarios = () => {
                   )}
                 </Td>
                 <Td textAlign="center">{p.completeName}</Td>
-                <Td textAlign="center">{p.idNumber}</Td>
-                <Td textAlign="center">{p.CPF}</Td>
+                <Td textAlign="center">{formatCpf(p.CPF)}</Td>
                 <Td textAlign="center">{p.local || "N/A"}</Td>
                 <Td textAlign="center">{p.carModel || "N/A"}</Td>
                 <Td textAlign="center">{p.licensePlate || "N/A"}</Td>

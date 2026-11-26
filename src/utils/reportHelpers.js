@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatCpf } from './validation';
 
 /**
  * Formata a data de entrada do input para o formato da API
@@ -86,7 +87,7 @@ export const formatDataForExcel = (entries) => {
       datetime: new Date(visitor.time),
       day: format(new Date(visitor.time), 'dd/MM/yyyy'),
       name: visitor.name,
-      idNumber: visitor.idNumber,
+      idNumber: formatCpf(visitor.idNumber),
       phoneNumber: visitor.phoneNumber,
       car: `${visitor.carModel} - ${visitor.color}`,
       licensePlate: visitor.licensePlate,
@@ -102,7 +103,7 @@ export const formatDataForExcel = (entries) => {
       datetime: new Date(entry.time),
       day: format(new Date(entry.time), 'dd/MM/yyyy'),
       name: entry.name,
-      idNumber: entry.idNumber,
+      idNumber: formatCpf(entry.idNumber),
       car: `${entry.carModel} - ${entry.color}`,
       licensePlate: entry.licensePlate,
       type: entry.type,
@@ -115,8 +116,7 @@ export const formatDataForExcel = (entries) => {
       datetime: new Date(entry.time),
       day: format(new Date(entry.time), 'dd/MM/yyyy'),
       name: entry.name,
-      idNumber: entry.idNumber,
-      CPF: entry.CPF || 'N/A',
+      idNumber: formatCpf(entry.idNumber),
       carModel: entry.carModel || 'N/A',
       licensePlate: entry.licensePlate || 'N/A',
       color: entry.color || 'N/A',

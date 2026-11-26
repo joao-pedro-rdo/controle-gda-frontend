@@ -93,14 +93,6 @@ export const PessoaNaoAutorizadaForm = ({
                     />
                 </FormControl>
                 <FormControl>
-                    <FormLabel>Identidade</FormLabel>
-                    <InputField
-                        id="identidade"
-                        name="identidade"
-                        defaultValue={toEdit?.identidade}
-                    />
-                </FormControl>
-                <FormControl>
                     <FormLabel>Observação</FormLabel>
                     <Textarea
                         name="observacao"

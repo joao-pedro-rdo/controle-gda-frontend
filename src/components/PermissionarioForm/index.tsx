@@ -56,10 +56,8 @@ const PermissionarioForm: React.FC<PermissionarioFormProps> = ({
       if (form) {
         (form.elements.namedItem("completeName") as HTMLInputElement).value =
           toEdit.completeName || "";
-        (form.elements.namedItem("idNumber") as HTMLInputElement).value =
-          toEdit.idNumber || "";
         (form.elements.namedItem("CPF") as HTMLInputElement).value =
-          toEdit.CPF || "";
+          formatCPF(toEdit.CPF || "");
         (form.elements.namedItem("local") as HTMLInputElement).value =
           toEdit.local || "";
         (form.elements.namedItem("carModel") as HTMLInputElement).value =
@@ -136,7 +134,6 @@ const PermissionarioForm: React.FC<PermissionarioFormProps> = ({
     const submitData = new FormData();
 
     submitData.append("completeName", formData.get("completeName") as string);
-    submitData.append("idNumber", formData.get("idNumber") as string);
     submitData.append(
       "CPF",
       (formData.get("CPF") as string).replace(/\D/g, "")
@@ -338,23 +335,6 @@ const PermissionarioForm: React.FC<PermissionarioFormProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="idNumber"
-                  className="block text-sm font-semibold text-gray-700 mb-1"
-                >
-                  Identidade <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="idNumber"
-                  name="idNumber"
-                  type="text"
-                  required
-                  placeholder="Número da identidade"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-
               <div>
                 <label
                   htmlFor="CPF"

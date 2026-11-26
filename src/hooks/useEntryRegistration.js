@@ -105,7 +105,7 @@ export const useEntryRegistration = () => {
       submitData.append('type', 'Entrada');
       submitData.append('isVisitor', 'false');
       submitData.append('isPermissionario', 'true');
-      submitData.append('idNumber', permissionario.idNumber || '');
+      submitData.append('idNumber', permissionario.CPF || '');
       submitData.append('CPF', permissionario.CPF || '');
       submitData.append('licensePlate', permissionario.licensePlate || 'N/A');
       submitData.append('carModel', permissionario.carModel || 'N/A');
