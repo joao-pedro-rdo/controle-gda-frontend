@@ -65,8 +65,10 @@ const FrontControl = () => {
     }
   }, [authorized]);
 
+  // Mesmo formato do QR do permissionário ({ permissionario: CPF }). Passar o
+  // objeto inteiro fazia o hook usar a placa dele e buscar como veículo.
   const handlePermissionarioSelect = (permissionario) => {
-    setScanResult(permissionario);
+    setScanResult({ permissionario: String(permissionario.CPF) });
     onClose();
   };
 

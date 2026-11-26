@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Spinner, Box } from '@chakra-ui/react';
 import client from '../services/client';
+import { imageEndpoint } from '../utils/imageEndpoint';
 
 const AuthenticatedImage = ({
     imagePath,
@@ -26,17 +27,12 @@ const AuthenticatedImage = ({
                 setLoading(true);
                 setError(false);
 
-                // Extrair o nome do arquivo do imagePath
-                const filename = imagePath.split('/').pop();
-
-                // Determinar se é imagem de visitante ou permissionário
-                let endpoint;
-                if (filename.startsWith('visitor_')) {
-                    endpoint = `/images/visitors/${filename}`;
-                } else if (filename.startsWith('permissionario_')) {
-                    endpoint = `/images/permissionarios/${filename}`;
-                } else {
-                    throw new Error('Tipo de imagem não reconhecido');
+                // Caminho desconhecido (dado antigo): mostra "Sem foto" sem erro.
+                const endpoint = imageEndpoint(imagePath);
+                if (!endpoint) {
+                    setError(true);
+                    setLoading(false);
+                    return;
                 }
 
                 // Fazer requisição com token JWT
