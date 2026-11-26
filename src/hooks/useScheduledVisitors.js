@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import client from "../services/client";
 import { useAuth } from "../context/AuthContext";
+import { localDayRange } from "../utils/dates";
 
+// Agendamentos pendentes do dia de hoje no fuso local (tela da Guarda).
 export const useScheduledVisitors = () => {
     const auth = useAuth();
     const [scheduledVisitors, setScheduledVisitors] = useState([]);
@@ -14,8 +16,7 @@ export const useScheduledVisitors = () => {
                 try {
                     setLoading(true);
                     setError(null);
-                    const today = new Date().toISOString().split('T')[0];
-                    const response = await client.get(`/entries/scheduled?date=${today}`);
+                    const response = await client.get("/entries/scheduled", { params: localDayRange() });
                     setScheduledVisitors(response.data || []);
                 } catch (error) {
                     console.error("Erro ao buscar agendamentos:", error);

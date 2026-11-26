@@ -5,7 +5,7 @@ import InputMask from "react-input-mask";
 import { Button, Checkbox, useToast, Alert, AlertIcon, Box } from "@chakra-ui/react";
 import ImageCapture from "./ImageCapture";
 import ColorSelect from "../Form/ColorSelect";
-import { useDestinations } from "../../../hooks/useDestinations";
+import DestinationSelect from "../Form/DestinationSelect";
 import { apiErrorMessage, digitsOnly, isValidCpf, validateFields } from "../../../utils/validation";
 
 const inputClass =
@@ -15,7 +15,6 @@ const VisitorForm = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const toast = useToast();
-    const { destinations, loading: loadingDestinations } = useDestinations();
 
     const [isLoading, setIsLoading] = useState(false);
     const [scheduledVisitor, setScheduledVisitor] = useState(null);
@@ -298,27 +297,15 @@ const VisitorForm = () => {
                         required
                     />
                 </div>
-                <div className="md:col-span-2">
-                    <label htmlFor="target" className="block text-sm font-medium text-gray-700">Seção de Destino</label>
-                    <select
-                        key={loadingDestinations ? "loading" : "ready"}
-                        name="target"
-                        id="target"
-                        defaultValue={scheduledVisitor?.target}
-                        disabled={loadingDestinations}
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100"
-                        required
-                    >
-                        <option value="">
-                            {loadingDestinations ? "Carregando..." : "Selecione..."}
-                        </option>
-                        {destinations.map((dest) => (
-                            <option key={dest} value={dest}>
-                                {dest}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                {/* Seções cadastradas pela S2; um destino antigo do agendamento continua aparecendo. */}
+                <DestinationSelect
+                    id="target"
+                    name="target"
+                    label="Seção de Destino"
+                    required
+                    defaultValue={scheduledVisitor?.target || ""}
+                    className="md:col-span-2"
+                />
 
                 {/* Captura de Imagem */}
                 <div className="col-span-1 md:col-span-2 lg:col-span-4 mt-6">

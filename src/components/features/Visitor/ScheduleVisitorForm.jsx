@@ -5,15 +5,19 @@ import { Button, Checkbox, useToast } from "@chakra-ui/react";
 import FormSection from "./FormSection";
 import InputField from "./InputField";
 import ColorSelect from "../Form/ColorSelect";
-import { useDestinations } from "../../../hooks/useDestinations";
-import { apiErrorMessage, validateFields } from "../../../utils/validation";
+import DestinationSelect from "../Form/DestinationSelect";
+import { apiErrorMessage, formatCpf, validateFields } from "../../../utils/validation";
+import { localDateInput, localTimeInput } from "../../../utils/dates";
 
-const ScheduleVisitorForm = () => {
+// Cria um agendamento ou, com `toEdit`, edita um agendamento pendente.
+// No modo edição chama `onSaved` em vez de navegar.
+const ScheduleVisitorForm = ({ toEdit = null, onSaved, onCancel }) => {
     const navigate = useNavigate();
     const toast = useToast();
+    const isEdit = Boolean(toEdit);
+    const scheduledAt = toEdit?.scheduledDate ? new Date(toEdit.scheduledDate) : null;
     const [isLoading, setIsLoading] = useState(false);
-    const [onFoot, setOnFoot] = useState(false);
-    const { destinations, loading: loadingDestinations } = useDestinations();
+    const [onFoot, setOnFoot] = useState(isEdit && !toEdit.licensePlate);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -38,31 +42,36 @@ const ScheduleVisitorForm = () => {
         const scheduledDate = new Date(`${scheduleDate}T${scheduleTime}`);
         if (!scheduleDate || !scheduleTime || isNaN(scheduledDate.getTime())) {
             errors.unshift("Informe data e hora do agendamento");
+        } else if (scheduledDate <= new Date()) {
+            errors.unshift("A data e hora do agendamento deve ser futura");
         }
         if (errors.length > 0) {
             toast({ title: "Verifique os dados", description: errors.join(" • "), status: "error", duration: 6000, isClosable: true });
             return;
         }
 
+        const payload = { ...data, onFoot, scheduledDate: scheduledDate.toISOString() };
         setIsLoading(true);
         try {
-            await client.post("/entries/schedule", {
-                ...data,
-                onFoot,
-                scheduledDate: scheduledDate.toISOString(),
-            });
-            toast({
-                title: "Agendamento Realizado",
-                description: "O visitante foi agendado com sucesso.",
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            });
-            navigate("/", { replace: true });
+            if (isEdit) {
+                const response = await client.put(`/entries/scheduled/${toEdit.id}`, payload);
+                toast({ title: "Agendamento atualizado", status: "success", duration: 3000, isClosable: true });
+                onSaved?.(response.data?.agendamento);
+            } else {
+                await client.post("/entries/schedule", payload);
+                toast({
+                    title: "Agendamento Realizado",
+                    description: "O visitante foi agendado com sucesso.",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+                navigate("/", { replace: true });
+            }
         } catch (error) {
             toast({
-                title: "Erro no Agendamento",
-                description: apiErrorMessage(error, "Não foi possível realizar o agendamento. Tente novamente."),
+                title: isEdit ? "Erro ao atualizar" : "Erro no Agendamento",
+                description: apiErrorMessage(error, "Não foi possível salvar o agendamento. Tente novamente."),
                 status: "error",
                 duration: 5000,
                 isClosable: true,
@@ -74,10 +83,12 @@ const ScheduleVisitorForm = () => {
 
     return (
         <form onSubmit={handleSubmit} noValidate className="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-            <div className="mb-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4" role="alert">
-                <p className="font-bold">Atenção</p>
-                <p>A foto do visitante será capturada pela guarda no momento da entrada.</p>
-            </div>
+            {!isEdit && (
+                <div className="mb-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4" role="alert">
+                    <p className="font-bold">Atenção</p>
+                    <p>A foto do visitante será capturada pela guarda no momento da entrada.</p>
+                </div>
+            )}
 
             <FormSection title="Dados do Agendamento">
                 <InputField
@@ -86,7 +97,8 @@ const ScheduleVisitorForm = () => {
                     label="Data"
                     type="date"
                     required
-                    min={new Date().toISOString().split("T")[0]}
+                    min={localDateInput()}
+                    defaultValue={scheduledAt ? localDateInput(scheduledAt) : undefined}
                 />
                 <InputField
                     id="scheduleTime"
@@ -94,6 +106,7 @@ const ScheduleVisitorForm = () => {
                     label="Hora"
                     type="time"
                     required
+                    defaultValue={scheduledAt ? localTimeInput(scheduledAt) : undefined}
                 />
             </FormSection>
 
@@ -106,6 +119,7 @@ const ScheduleVisitorForm = () => {
                     maxLength="150"
                     className="capitalize md:col-span-2"
                     required
+                    defaultValue={toEdit?.name}
                 />
                 <InputField
                     id="idNumber"
@@ -116,6 +130,7 @@ const ScheduleVisitorForm = () => {
                     placeholder="000.000.000-00"
                     title="Digite um CPF válido (000.000.000-00)"
                     required
+                    defaultValue={toEdit ? formatCpf(toEdit.idNumber) : undefined}
                 />
                 <InputField
                     id="phoneNumber"
@@ -125,6 +140,7 @@ const ScheduleVisitorForm = () => {
                     placeholder="(11) 99999-9999"
                     title="Digite um telefone válido (DD) 9XXXX-XXXX"
                     required
+                    defaultValue={toEdit?.phoneNumber || undefined}
                 />
             </FormSection>
 
@@ -147,6 +163,7 @@ const ScheduleVisitorForm = () => {
                             label="Modelo"
                             maxLength="50"
                             required
+                            defaultValue={toEdit?.carModel || undefined}
                         />
                         <InputField
                             id="licensePlate"
@@ -156,8 +173,9 @@ const ScheduleVisitorForm = () => {
                             maxLength="8"
                             className="uppercase"
                             required
+                            defaultValue={toEdit?.licensePlate || undefined}
                         />
-                        <ColorSelect required />
+                        <ColorSelect required defaultValue={toEdit?.color || ""} />
                     </>
                 )}
             </FormSection>
@@ -169,36 +187,31 @@ const ScheduleVisitorForm = () => {
                     label="Contato"
                     maxLength="100"
                     required
+                    defaultValue={toEdit?.contactPerson || undefined}
                 />
-                <div className="md:col-span-2">
-                    <label htmlFor="target" className="block text-sm font-medium text-gray-700">Seção de Destino</label>
-                    <select
-                        name="target"
-                        id="target"
-                        required
-                        disabled={loadingDestinations}
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 disabled:bg-gray-100"
-                    >
-                        <option value="">
-                            {loadingDestinations ? 'Carregando...' : 'Selecione...'}
-                        </option>
-                        {destinations.map((dest) => (
-                            <option key={dest} value={dest}>
-                                {dest}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <DestinationSelect
+                    id="target"
+                    name="target"
+                    label="Seção de Destino"
+                    required
+                    defaultValue={toEdit?.target || ""}
+                    className="md:col-span-2"
+                />
             </FormSection>
 
-            <div className="flex items-center justify-end mt-8 pt-4 border-t">
+            <div className="flex items-center justify-end gap-3 mt-8 pt-4 border-t">
+                {isEdit && (
+                    <Button variant="outline" onClick={onCancel} isDisabled={isLoading}>
+                        Cancelar
+                    </Button>
+                )}
                 <Button
                     type="submit"
                     colorScheme="red"
                     isLoading={isLoading}
-                    loadingText="Agendando..."
+                    loadingText={isEdit ? "Salvando..." : "Agendando..."}
                 >
-                    Agendar Visitante
+                    {isEdit ? "Salvar Alterações" : "Agendar Visitante"}
                 </Button>
             </div>
         </form>

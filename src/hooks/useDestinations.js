@@ -14,8 +14,8 @@ export const useDestinations = () => {
       setError(null);
     } catch (err) {
       console.error('Erro ao buscar destinos:', err);
-      // Se der erro, usa destinos padrão
-      setDestinations(getDefaultDestinations());
+      // Sem lista fixa de reserva: o select mostra vazio e o erro aparece.
+      setDestinations([]);
       setError(err);
     } finally {
       setLoading(false);
@@ -49,7 +49,7 @@ export const useDestinations = () => {
   const resetToDefaults = async () => {
     try {
       const response = await client.post('/settings/destinations/reset');
-      setDestinations(response.data.destinations || getDefaultDestinations());
+      setDestinations(response.data.destinations || []);
       return { success: true };
     } catch (err) {
       console.error('Erro ao resetar destinos:', err);
@@ -71,22 +71,3 @@ export const useDestinations = () => {
     refetch: fetchDestinations
   };
 };
-
-// Destinos padrão
-const getDefaultDestinations = () => [
-  'RP',
-  'SFPC',
-  'Cmt',
-  'SCmt',
-  'Estande',
-  'Adj Cmdo',
-  'SecInfor',
-  'SecJur',
-  'S1',
-  'S2',
-  'S3',
-  'S4',
-  'Pelotões',
-  'SubCias',
-  'Outros'
-];

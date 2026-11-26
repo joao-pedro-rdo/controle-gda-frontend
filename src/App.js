@@ -14,6 +14,7 @@ import Permissionarios from "./routes/Permissionarios";
 import ListPermissionarios from "./routes/ListPermissionarios";
 import ScheduleVisitor from "./routes/ScheduleVisitor"; // Nova importação
 import ScheduledVisitors from "./routes/ScheduledVisitors"; // Nova importação
+import ManageScheduledVisitors from "./routes/ManageScheduledVisitors";
 import { PessoasNaoAutorizadas } from "./routes/PessoasNaoAutorizadas";
 import Settings from "./routes/Settings";
 
@@ -136,6 +137,14 @@ const App = () => {
             element={
               <RequireAuth>
                 <ScheduledVisitors />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/agendamentos/gerenciar"
+            element={
+              <RequireAuth>
+                <ManageScheduledVisitors />
               </RequireAuth>
             }
           />
